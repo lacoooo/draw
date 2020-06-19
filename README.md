@@ -1,2 +1,2 @@
-# draw
-A generative art library inspired by p5js and ptsjs.
+# draw.js
+wait a minute
