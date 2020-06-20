@@ -9,7 +9,7 @@ let config = {
     main: path.join(__dirname, '../src/index.ts')
   },
   output: {
-    filename: '[name].bundle.js',
+    filename: 'draw.js',
     path: path.join(__dirname, '../dist')
   },
   module: {
