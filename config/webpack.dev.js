@@ -1,3 +1,4 @@
+var webpack = require('webpack');
 var path = require('path');
 
 var LIB_PATH = path.resolve(__dirname, '../src/index.ts')
@@ -10,7 +11,6 @@ module.exports = {
 
     entry: {
         draw: LIB_PATH
-        // testapp: APP_PATH
     },
 
     output: {
@@ -20,7 +20,7 @@ module.exports = {
         filename: 'draw.js'
     },
 
-    watchOptions: { poll: true }, // seems to need this for Windows Linux subsystem to watch
+    watchOptions: { poll: true },
 
     resolve: {
         extensions: ['.ts', '.js']
@@ -34,6 +34,8 @@ module.exports = {
         }]
     },
 
-    plugins: []
+    plugins: [
+        new webpack.BannerPlugin( `MIT @License\n`)
+    ]
 
 };
