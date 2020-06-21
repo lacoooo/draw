@@ -6,11 +6,15 @@
     <title>temp</title>
 </head>
 <body>
-    <canvas id="canvas"></canvas>
     <script src="../dist/draw.js"></script>
     <script>
-
-        
+        Draw.setup({
+            width: 1000,
+            height: 1000
+        })
+        Draw.loop(() => {
+            console.log(Draw.frame)
+        })
 
     </script>
 </body>

@@ -7,7 +7,7 @@
     "dev": "webpack --watch --config config/webpack.dev.js --progress --colors",
     "build": "webpack --config config/webpack.prod.js --progress --colors && npm run modules",
     "modules": "tsc -d && npm run bundle-typings",
-    "bundle-typings": "dts-bundle --name pts --outputAsModuleFolder true --main dist/modules/**/*.d.ts --out ../draw.d.ts"
+    "bundle-typings": "dts-bundle --name draw --outputAsModuleFolder true --main dist/modules/**/*.d.ts --out ../draw.d.ts"
   },
   "repository": {
     "type": "git",

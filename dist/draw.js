@@ -100,15 +100,64 @@ return /******/ (function(modules) { // webpackBootstrap
 /************************************************************************/
 /******/ ({
 
+/***/ "./src/Canvas.ts":
+/*!***********************!*\
+  !*** ./src/Canvas.ts ***!
+  \***********************/
+/*! exports provided: Canvas */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Canvas", function() { return Canvas; });
+class Canvas {
+    constructor(canvasId) {
+        this.frame = 0;
+        if (canvasId) {
+            const canvas = document.getElementById(canvasId);
+            if (canvas !== null)
+                this._canvas = canvas;
+            else
+                this._canvas = this._createElement("canvas");
+        }
+        else {
+            this._canvas = this._createElement("canvas");
+            document.body.appendChild(this._canvas);
+        }
+        this._ctx = this._canvas.getContext('2d');
+    }
+    _createElement(elem = "div") {
+        const d = document.createElement(elem);
+        return d;
+    }
+    setup(params) {
+        const { width, height } = params || {};
+        this._canvas.width = width || 1000;
+        this._canvas.height = height || 1000;
+    }
+    loop(cb) {
+        this.frame++;
+        if (cb)
+            cb();
+        requestAnimationFrame(this.loop.bind(this, cb));
+    }
+}
+
+
+/***/ }),
+
 /***/ "./src/index.ts":
 /*!**********************!*\
   !*** ./src/index.ts ***!
   \**********************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! no exports provided */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _Canvas__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Canvas */ "./src/Canvas.ts");
 
+window.Draw = new _Canvas__WEBPACK_IMPORTED_MODULE_0__["Canvas"]();
 
 
 /***/ })
