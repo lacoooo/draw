@@ -4,6 +4,7 @@ var path = require('path');
 var LIB_PATH = path.resolve(__dirname, '../src/index.ts')
 var BUILD_PATH = path.resolve(__dirname, '../dist')
 
+
 module.exports = {
 
     mode: 'development',
@@ -35,7 +36,7 @@ module.exports = {
     },
 
     plugins: [
-        new webpack.BannerPlugin( `MIT @License\n`)
+        new webpack.BannerPlugin( `MIT @License\n`),
     ]
 
 };

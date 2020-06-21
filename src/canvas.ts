@@ -1,1 +1,6 @@
-export default 'canvas'
+class Canvas {
+    
+    constructor(canvas?: string) {
+
+    }
+}

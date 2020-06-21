@@ -1,2 +1,6 @@
 "use strict";
-//# sourceMappingURL=canvas.js.map
+class Canvas {
+    constructor(canvas) {
+    }
+}
+//# sourceMappingURL=Canvas.js.map
