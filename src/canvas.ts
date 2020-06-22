@@ -1,4 +1,4 @@
-import { Isetup } from 'Types'
+import { Isetup } from './types'
 
 export class Canvas {
 
@@ -48,5 +48,29 @@ export class Canvas {
         this.frame ++
         if (cb) cb(this._ctx)
         requestAnimationFrame(this.loop.bind(this, cb))
+    }
+
+    public strokeWeight(width: number) {
+        this._ctx.lineWidth = width
+    }
+
+    private stroke() {
+        this._ctx.stroke()
+    }
+
+    public beginPath() {
+        this._ctx.beginPath()
+    }
+
+    public closePath() {
+        this._ctx.closePath()
+    }
+
+    public line(x1: number, y1: number, x2: number, y2: number) {
+        this.beginPath()
+        this._ctx.moveTo(x1, y1)
+        this._ctx.lineTo(x2, y2)
+        this.closePath()
+        this.stroke()
     }
 }

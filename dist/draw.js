@@ -100,9 +100,9 @@ return /******/ (function(modules) { // webpackBootstrap
 /************************************************************************/
 /******/ ({
 
-/***/ "./src/Canvas.ts":
+/***/ "./src/canvas.ts":
 /*!***********************!*\
-  !*** ./src/Canvas.ts ***!
+  !*** ./src/canvas.ts ***!
   \***********************/
 /*! exports provided: Canvas */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
@@ -149,6 +149,25 @@ class Canvas {
             cb(this._ctx);
         requestAnimationFrame(this.loop.bind(this, cb));
     }
+    strokeWeight(width) {
+        this._ctx.lineWidth = width;
+    }
+    stroke() {
+        this._ctx.stroke();
+    }
+    beginPath() {
+        this._ctx.beginPath();
+    }
+    closePath() {
+        this._ctx.closePath();
+    }
+    line(x1, y1, x2, y2) {
+        this.beginPath();
+        this._ctx.moveTo(x1, y1);
+        this._ctx.lineTo(x2, y2);
+        this.closePath();
+        this.stroke();
+    }
 }
 
 
@@ -163,10 +182,10 @@ class Canvas {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _Canvas__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Canvas */ "./src/Canvas.ts");
+/* harmony import */ var _canvas__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./canvas */ "./src/canvas.ts");
 
 window.Draw = (params) => {
-    return new _Canvas__WEBPACK_IMPORTED_MODULE_0__["Canvas"](params);
+    return new _canvas__WEBPACK_IMPORTED_MODULE_0__["Canvas"](params);
 };
 
 

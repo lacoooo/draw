@@ -24,12 +24,7 @@
 
         d.loop(
             (ctx) => {
-                console.log(d.frame)
-                ctx.beginPath()
-                ctx.moveTo(0, 0)
-                ctx.lineTo(d.width, d.frame)
-                ctx.closePath()
-                ctx.stroke();
+                d.line(Math.random() * d.width, Math.random() * d.height, Math.random() * d.width, Math.random() * d.height)
             }
         )
 
