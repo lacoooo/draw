@@ -183,10 +183,49 @@ class Canvas {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _canvas__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./canvas */ "./src/canvas.ts");
+/* harmony import */ var _num__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./num */ "./src/num.ts");
+
 
 window.Draw = (params) => {
     return new _canvas__WEBPACK_IMPORTED_MODULE_0__["Canvas"](params);
 };
+window.Num = _num__WEBPACK_IMPORTED_MODULE_1__["Num"];
+
+
+/***/ }),
+
+/***/ "./src/num.ts":
+/*!********************!*\
+  !*** ./src/num.ts ***!
+  \********************/
+/*! exports provided: Num, Geom */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Num", function() { return Num; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Geom", function() { return Geom; });
+/*! Source code licensed under Apache License 2.0. Copyright © 2017-current William Ngan and contributors. (https://github.com/williamngan/pts) */
+const Num = {
+    equals(a, b, threshold = 0.00001) {
+        return Math.abs(a - b) < threshold;
+    },
+    lerp(a, b, t) {
+        return (1 - t) * a + t * b;
+    },
+    clamp(val, min, max) {
+        return Math.max(min, Math.min(max, val));
+    },
+    within(p, a, b) {
+        return p >= Math.min(a, b) && p <= Math.max(a, b);
+    },
+    randomRange(a, b = 0) {
+        const r = (a > b) ? (a - b) : (b - a);
+        return a + Math.random() * r;
+    },
+};
+class Geom {
+}
 
 
 /***/ })

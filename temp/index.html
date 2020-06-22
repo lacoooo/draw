@@ -18,13 +18,13 @@
             (ctx) => {
                 console.log(ctx)
                 ctx.lineWidth = 1
-                ctx.strokeStyle = '#000000'
+                ctx.strokeStyle = 'rgba(0,0,0,0.01)'
             }
         )
 
         d.loop(
             (ctx) => {
-                d.line(Math.random() * d.width, Math.random() * d.height, Math.random() * d.width, Math.random() * d.height)
+                d.line(Math.random() * d.width / 2, Math.random() * d.height, Math.random() * d.width / 2, Math.random() * d.height)
             }
         )
 
