@@ -1,21 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>temp</title>
 </head>
+
 <body>
     <script src="../dist/draw.js"></script>
     <script>
-        Draw.setup({
+        const d = Draw({
             width: 1000,
             height: 1000
         })
-        Draw.loop(() => {
-            console.log(Draw.frame)
-        })
+        d.setup(
+            (ctx) => {
+                console.log(ctx)
+                ctx.lineWidth = 1
+                ctx.strokeStyle = '#000000'
+            }
+        )
+
+        d.loop(
+            (ctx) => {
+                console.log(d.frame)
+                ctx.beginPath()
+                ctx.moveTo(0, 0)
+                ctx.lineTo(d.width, d.frame)
+                ctx.closePath()
+                ctx.stroke();
+            }
+        )
 
     </script>
 </body>
+
 </html>

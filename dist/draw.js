@@ -111,8 +111,11 @@ return /******/ (function(modules) { // webpackBootstrap
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Canvas", function() { return Canvas; });
 class Canvas {
-    constructor(canvasId) {
+    constructor(params) {
         this.frame = 0;
+        this.width = 1000;
+        this.height = 1000;
+        const { canvasId } = params || {};
         if (canvasId) {
             const canvas = document.getElementById(canvasId);
             if (canvas !== null)
@@ -125,20 +128,25 @@ class Canvas {
             document.body.appendChild(this._canvas);
         }
         this._ctx = this._canvas.getContext('2d');
+        const { width, height } = params || {};
+        this._canvas.width = width || this.width;
+        this._canvas.height = height || this.height;
+        this.width = this._canvas.width;
+        this.height = this._canvas.height;
     }
     _createElement(elem = "div") {
         const d = document.createElement(elem);
         return d;
     }
-    setup(params) {
-        const { width, height } = params || {};
-        this._canvas.width = width || 1000;
-        this._canvas.height = height || 1000;
+    setup(cb) {
+        if (cb) {
+            cb(this._ctx);
+        }
     }
     loop(cb) {
         this.frame++;
         if (cb)
-            cb();
+            cb(this._ctx);
         requestAnimationFrame(this.loop.bind(this, cb));
     }
 }
@@ -157,7 +165,9 @@ class Canvas {
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Canvas__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Canvas */ "./src/Canvas.ts");
 
-window.Draw = new _Canvas__WEBPACK_IMPORTED_MODULE_0__["Canvas"]();
+window.Draw = (params) => {
+    return new _Canvas__WEBPACK_IMPORTED_MODULE_0__["Canvas"](params);
+};
 
 
 /***/ })
