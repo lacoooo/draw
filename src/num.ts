@@ -8,7 +8,7 @@
 /**
  * Num class provides static helper functions for basic numeric operations.
  */
-export const Num = {
+export class Num {
 
   /**
    * Check if two numbers are equal or almost equal within a threshold.
@@ -16,9 +16,9 @@ export const Num = {
    * @param b number b
    * @param threshold threshold value that specifies the minimum difference within which the two numbers are considered equal
    */
-  equals( a:number, b:number, threshold=0.00001 ):boolean {
+  static equals( a:number, b:number, threshold=0.00001 ):boolean {
     return Math.abs( a-b ) < threshold;
-  },
+  }
 
 
   /**
@@ -27,9 +27,9 @@ export const Num = {
    * @param b end value
    * @param t an interpolation value, usually between 0 to 1
    */
-  lerp( a:number, b:number, t:number ):number {
+  static lerp( a:number, b:number, t:number ):number {
     return (1 - t) * a + t * b;
-  },
+  }
 
 
   /**
@@ -38,9 +38,9 @@ export const Num = {
    * @param min min value
    * @param max max value
    */
-  clamp( val:number, min:number, max:number ):number {
+  static clamp( val:number, min:number, max:number ):number {
     return Math.max(min, Math.min(max, val));
-  },
+  }
 
 
 //   /**
@@ -67,9 +67,9 @@ export const Num = {
    * @param a first bounding value
    * @param b second bounding value
    */
-  within( p:number, a:number, b:number ):boolean {
+  static within( p:number, a:number, b:number ):boolean {
     return p >= Math.min(a, b) && p <= Math.max(a, b);
-  },
+  }
 
 
   /**
@@ -77,10 +77,10 @@ export const Num = {
    * @param a range value 1
    * @param b range value 2
    */
-  randomRange( a:number, b:number = 0 ):number {
+  static randomRange( a:number, b:number = 0 ):number {
     const r = (a > b) ? (a - b) : (b - a);
     return a + Math.random() * r;
-  },
+  }
 
 
 //   /**

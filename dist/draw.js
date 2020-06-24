@@ -190,6 +190,7 @@ window.Draw = (params) => {
     return new _canvas__WEBPACK_IMPORTED_MODULE_0__["Canvas"](params);
 };
 window.Num = _num__WEBPACK_IMPORTED_MODULE_1__["Num"];
+window.Geom = _num__WEBPACK_IMPORTED_MODULE_1__["Geom"];
 
 
 /***/ }),
@@ -206,24 +207,24 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Num", function() { return Num; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Geom", function() { return Geom; });
 /*! Source code licensed under Apache License 2.0. Copyright © 2017-current William Ngan and contributors. (https://github.com/williamngan/pts) */
-const Num = {
-    equals(a, b, threshold = 0.00001) {
+class Num {
+    static equals(a, b, threshold = 0.00001) {
         return Math.abs(a - b) < threshold;
-    },
-    lerp(a, b, t) {
+    }
+    static lerp(a, b, t) {
         return (1 - t) * a + t * b;
-    },
-    clamp(val, min, max) {
+    }
+    static clamp(val, min, max) {
         return Math.max(min, Math.min(max, val));
-    },
-    within(p, a, b) {
+    }
+    static within(p, a, b) {
         return p >= Math.min(a, b) && p <= Math.max(a, b);
-    },
-    randomRange(a, b = 0) {
+    }
+    static randomRange(a, b = 0) {
         const r = (a > b) ? (a - b) : (b - a);
         return a + Math.random() * r;
-    },
-};
+    }
+}
 class Geom {
 }
 

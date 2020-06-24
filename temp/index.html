@@ -14,17 +14,18 @@
             width: 1000,
             height: 1000
         })
+
         d.setup(
             (ctx) => {
                 console.log(ctx)
                 ctx.lineWidth = 1
-                ctx.strokeStyle = 'rgba(0,0,0,0.01)'
+                ctx.strokeStyle = 'rgba(200,0,0,0.1)'
             }
         )
 
         d.loop(
             (ctx) => {
-                d.line(Math.random() * d.width / 2, Math.random() * d.height, Math.random() * d.width / 2, Math.random() * d.height)
+                d.line(Math.random() * d.width, Math.random() * d.height, Math.random() * d.width, Math.random() * d.height)
             }
         )
 

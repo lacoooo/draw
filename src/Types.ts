@@ -1,10 +1,11 @@
 import { Canvas } from './canvas'
-import { Num } from './num'
+import { Num, Geom } from './num'
 
 declare global {
     interface Window {
-        Draw: (id?:string) => typeof Canvas
+        Draw: ( params: Isetup ) => Canvas
         Num: typeof Num
+        Geom: Geom
     }
 }
 
