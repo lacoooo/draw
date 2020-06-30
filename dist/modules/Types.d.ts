@@ -11,7 +11,7 @@ export interface Icanvas {
     frame: number;
     width: number;
     height: number;
-    setup(cb: (ctx: CanvasRenderingContext2D) => void): void;
+    setup?(cb: (ctx: CanvasRenderingContext2D) => void): void;
     loop(cb: (ctx: CanvasRenderingContext2D) => void): void;
     strokeWeight(width: number): void;
     beginPath(): void;
