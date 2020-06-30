@@ -154,7 +154,6 @@ export class Num {
 //  * Geom class provides static helper functions for basic geometric operations.
 //  */
 export class Geom {
-
 //   /**
 //    * Bound an angle between 0 to 360 degrees.
 //    * @param angle angle value

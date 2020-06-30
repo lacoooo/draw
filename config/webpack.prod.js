@@ -1,12 +1,12 @@
-var webpack = require("webpack");
-var path = require("path");
-const DtsBundleWebpack = require('dts-bundle-webpack')
+const webpack = require("webpack");
+const path = require("path");
 const TerserPlugin = require("terser-webpack-plugin");
+const TypedocWebpackPlugin = require('typedoc-webpack-plugin');
 
-var BUILD_PATH = path.resolve(__dirname, "../dist");
+const BUILD_PATH = path.resolve(__dirname, "../dist");
 
 
-var options = {
+const options = {
  
   // Required
 
@@ -104,8 +104,8 @@ module.exports = {
     minimize: true,
     minimizer: [
       new TerserPlugin({
-        cache: true,
-        parallel: true,
+        cache: false,
+        parallel: false,
         terserOptions: {
           warnings: false,
           ie8: true,
@@ -119,11 +119,19 @@ module.exports = {
             return `License information can be found in ${licenseFile}`;
           },
         },
-      }),
+      })
     ],
   },
 
   plugins: [
-    new DtsBundleWebpack({options})
+    new TypedocWebpackPlugin({
+      name: 'draw',
+      out: '../docs',
+      module: 'commonjs',
+      target: 'es5',
+      exclude: '**/node_modules/**/*.*',
+      experimentalDecorators: true,
+      excludeExternals: true
+    }, '../src')
   ]
 };

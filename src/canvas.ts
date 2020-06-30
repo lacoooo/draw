@@ -1,6 +1,6 @@
-import { Isetup } from './types'
+import { Icanvas, Isetup } from './types'
 
-export class Canvas {
+export class Canvas implements Icanvas {
 
     protected _canvas: HTMLCanvasElement
     protected _ctx: CanvasRenderingContext2D

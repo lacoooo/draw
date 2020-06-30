@@ -186,9 +186,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _num__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./num */ "./src/num.ts");
 
 
-window.Draw = (params) => {
-    return new _canvas__WEBPACK_IMPORTED_MODULE_0__["Canvas"](params);
-};
+var CarTransmission;
+(function (CarTransmission) {
+    CarTransmission[CarTransmission["Automatic"] = 200] = "Automatic";
+    CarTransmission[CarTransmission["Manual"] = 300] = "Manual";
+})(CarTransmission || (CarTransmission = {}));
+window.Draw = _canvas__WEBPACK_IMPORTED_MODULE_0__["Canvas"];
 window.Num = _num__WEBPACK_IMPORTED_MODULE_1__["Num"];
 window.Geom = _num__WEBPACK_IMPORTED_MODULE_1__["Geom"];
 

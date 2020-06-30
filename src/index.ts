@@ -1,10 +1,12 @@
 import { Canvas } from './canvas'
 import { Num, Geom } from './num'
-import { Isetup } from './types'
 
-window.Draw = ( params:Isetup ): Canvas => {
-    return new Canvas(params)
-}
+enum CarTransmission {
+    Automatic = 200,
+    Manual = 300
+  }
+
+window.Draw = Canvas
 
 window.Num = Num
 

@@ -1,3 +1,6 @@
-import { Canvas } from './Canvas';
-window.Draw = new Canvas();
+import { Canvas } from './canvas';
+import { Num, Geom } from './num';
+window.Draw = Canvas;
+window.Num = Num;
+window.Geom = Geom;
 //# sourceMappingURL=index.js.map
