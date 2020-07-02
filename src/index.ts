@@ -1,7 +1,7 @@
-import { Canvas } from './canvas'
+import { Draw } from './canvas'
 import { Num, Geom } from './num'
 
-window.Draw = Canvas
+window.Draw = Draw
 
 window.Num = Num
 

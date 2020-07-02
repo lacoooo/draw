@@ -104,17 +104,19 @@ return /******/ (function(modules) { // webpackBootstrap
 /*!***********************!*\
   !*** ./src/canvas.ts ***!
   \***********************/
-/*! exports provided: Canvas */
+/*! exports provided: Draw */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Canvas", function() { return Canvas; });
-class Canvas {
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Draw", function() { return Draw; });
+class Draw {
     constructor(params) {
         this.frame = 0;
         this.width = 1000;
         this.height = 1000;
+        this.mouseX = 0;
+        this.mouseY = 0;
         const { canvasId } = params || {};
         if (canvasId) {
             const canvas = document.getElementById(canvasId);
@@ -133,6 +135,25 @@ class Canvas {
         this._canvas.height = height || this.height;
         this.width = this._canvas.width;
         this.height = this._canvas.height;
+        this.onmousemoveInit();
+    }
+    get canvasPos() {
+        const pos = this._canvas.getBoundingClientRect();
+        return {
+            left: pos.left,
+            top: pos.top,
+            right: pos.right,
+            bottom: pos.bottom
+        };
+    }
+    mousePosition(ev) {
+        console.log(this.mouseX, this.mouseY);
+        const canvasPos = this.canvasPos;
+        this.mouseX = Math.round(ev.pageX - canvasPos.left);
+        this.mouseY = Math.round(ev.pageY - canvasPos.top);
+    }
+    onmousemoveInit() {
+        this._canvas.onmousemove = this.mousePosition.bind(this);
     }
     _createElement(elem = "div") {
         const d = document.createElement(elem);
@@ -147,6 +168,8 @@ class Canvas {
         this.frame++;
         if (cb)
             cb(this._ctx);
+        else
+            throw Error('withOut callback');
         requestAnimationFrame(this.loop.bind(this, cb));
     }
     strokeWeight(width) {
@@ -186,7 +209,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _num__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./num */ "./src/num.ts");
 
 
-window.Draw = _canvas__WEBPACK_IMPORTED_MODULE_0__["Canvas"];
+window.Draw = _canvas__WEBPACK_IMPORTED_MODULE_0__["Draw"];
 window.Num = _num__WEBPACK_IMPORTED_MODULE_1__["Num"];
 window.Geom = _num__WEBPACK_IMPORTED_MODULE_1__["Geom"];
 
