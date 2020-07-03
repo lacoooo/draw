@@ -33,6 +33,13 @@
         d.loop(
             (ctx) => {
                 d.line(0, 0, d.mouseX, d.mouseY)
+                d.line(d.pmouseX, d.pmouseY, d.mouseX, d.mouseY)
+            }
+        )
+
+        d.click(
+            (e) => {
+                console.log(e)
             }
         )
 

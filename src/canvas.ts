@@ -3,13 +3,15 @@ import { Idraw, Isetup } from './types'
 export class Draw implements Idraw {
 
     #canvas!: HTMLCanvasElement
-    protected _ctx!: CanvasRenderingContext2D
+    #ctx!: CanvasRenderingContext2D
 
     public frame = 0
     public width = 1000
     public height = 1000
     public mouseX = 0
+    public pmouseX = 0
     public mouseY = 0
+    public pmouseY = 0
     public mouseDown = false
 
     constructor(params?: Isetup) {
@@ -32,7 +34,7 @@ export class Draw implements Idraw {
             this.#canvas = this._createElement("canvas") as HTMLCanvasElement
             document.body.appendChild(this.#canvas)
         }
-        this._ctx = this.#canvas.getContext('2d') as CanvasRenderingContext2D
+        this.#ctx = this.#canvas.getContext('2d') as CanvasRenderingContext2D
     }
 
     private canvasSizeInit(params?: Isetup) {
@@ -55,6 +57,8 @@ export class Draw implements Idraw {
 
     private mousePosition(ev: any) {
         const canvasPos = this.canvasPos
+        this.pmouseX = this.mouseX
+        this.pmouseY = this.mouseY
         this.mouseX = Math.round(ev.pageX - canvasPos.left)
         this.mouseY = Math.round(ev.pageY - canvasPos.top)
     }
@@ -98,6 +102,16 @@ export class Draw implements Idraw {
     }
 
     /**
+     * Register mouse down events
+     * @param cb Function triggered on mouse down
+     */
+    public click(cb: (key: KeyboardEvent['key'], keyCode: KeyboardEvent['keyCode']) => void) {
+        document.onkeydown = e => {
+            cb(e.key, e.keyCode)
+        }
+    }
+
+    /**
     * Helper function to create a DOM element
     * @param elem element tag name
     */
@@ -107,23 +121,23 @@ export class Draw implements Idraw {
     }
 
     /**
-     * setup only call once
+     * Setup only call once
      * @param cb Function to be called at initialization time
      */
     public setup(cb: (ctx: CanvasRenderingContext2D) => void) {
         if (cb) {
-            cb(this._ctx)
+            cb(this.#ctx)
         }
     }
 
     /**
-     * loop each frame
+     * Loop each frame
      * @param cb function for each frame call
      */
     public loop(cb: (ctx: CanvasRenderingContext2D) => void) {
         this.frame ++
-        if (cb) cb(this._ctx)
-        else throw Error('withOut callback')
+        if (cb) cb(this.#ctx)
+        else throw Error('without callback')
         requestAnimationFrame(this.loop.bind(this, cb))
     }
 
@@ -132,22 +146,22 @@ export class Draw implements Idraw {
      * @param width stroke width
      */
     public strokeWeight(width: number) {
-        this._ctx.lineWidth = width
+        this.#ctx.lineWidth = width
     }
 
     /**
      * Trace the path
      */
     private stroke() {
-        this._ctx.stroke()
+        this.#ctx.stroke()
     }
 
     private beginPath() {
-        this._ctx.beginPath()
+        this.#ctx.beginPath()
     }
 
     private closePath() {
-        this._ctx.closePath()
+        this.#ctx.closePath()
     }
 
     /**
@@ -159,8 +173,8 @@ export class Draw implements Idraw {
      */
     public line(x1: number, y1: number, x2: number, y2: number) {
         this.beginPath()
-        this._ctx.moveTo(x1, y1)
-        this._ctx.lineTo(x2, y2)
+        this.#ctx.moveTo(x1, y1)
+        this.#ctx.lineTo(x2, y2)
         this.closePath()
         this.stroke()
     }

@@ -123,15 +123,18 @@ var __classPrivateFieldGet = (undefined && undefined.__classPrivateFieldGet) || 
     }
     return privateMap.get(receiver);
 };
-var _canvas;
+var _canvas, _ctx;
 class Draw {
     constructor(params) {
         _canvas.set(this, void 0);
+        _ctx.set(this, void 0);
         this.frame = 0;
         this.width = 1000;
         this.height = 1000;
         this.mouseX = 0;
+        this.pmouseX = 0;
         this.mouseY = 0;
+        this.pmouseY = 0;
         this.mouseDown = false;
         this.canvasElementInit(params);
         this.canvasSizeInit(params);
@@ -150,7 +153,7 @@ class Draw {
             __classPrivateFieldSet(this, _canvas, this._createElement("canvas"));
             document.body.appendChild(__classPrivateFieldGet(this, _canvas));
         }
-        this._ctx = __classPrivateFieldGet(this, _canvas).getContext('2d');
+        __classPrivateFieldSet(this, _ctx, __classPrivateFieldGet(this, _canvas).getContext('2d'));
     }
     canvasSizeInit(params) {
         const { width, height } = params || {};
@@ -170,6 +173,8 @@ class Draw {
     }
     mousePosition(ev) {
         const canvasPos = this.canvasPos;
+        this.pmouseX = this.mouseX;
+        this.pmouseY = this.mouseY;
         this.mouseX = Math.round(ev.pageX - canvasPos.left);
         this.mouseY = Math.round(ev.pageY - canvasPos.top);
     }
@@ -197,44 +202,49 @@ class Draw {
             }
         };
     }
+    click(cb) {
+        document.onkeydown = e => {
+            cb(e.key, e.keyCode);
+        };
+    }
     _createElement(elem = "div") {
         const d = document.createElement(elem);
         return d;
     }
     setup(cb) {
         if (cb) {
-            cb(this._ctx);
+            cb(__classPrivateFieldGet(this, _ctx));
         }
     }
     loop(cb) {
         this.frame++;
         if (cb)
-            cb(this._ctx);
+            cb(__classPrivateFieldGet(this, _ctx));
         else
-            throw Error('withOut callback');
+            throw Error('without callback');
         requestAnimationFrame(this.loop.bind(this, cb));
     }
     strokeWeight(width) {
-        this._ctx.lineWidth = width;
+        __classPrivateFieldGet(this, _ctx).lineWidth = width;
     }
     stroke() {
-        this._ctx.stroke();
+        __classPrivateFieldGet(this, _ctx).stroke();
     }
     beginPath() {
-        this._ctx.beginPath();
+        __classPrivateFieldGet(this, _ctx).beginPath();
     }
     closePath() {
-        this._ctx.closePath();
+        __classPrivateFieldGet(this, _ctx).closePath();
     }
     line(x1, y1, x2, y2) {
         this.beginPath();
-        this._ctx.moveTo(x1, y1);
-        this._ctx.lineTo(x2, y2);
+        __classPrivateFieldGet(this, _ctx).moveTo(x1, y1);
+        __classPrivateFieldGet(this, _ctx).lineTo(x2, y2);
         this.closePath();
         this.stroke();
     }
 }
-_canvas = new WeakMap();
+_canvas = new WeakMap(), _ctx = new WeakMap();
 
 
 /***/ }),
