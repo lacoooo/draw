@@ -41,7 +41,7 @@
       "check-whitespace"
     ],
     "radix": true,
-    "semicolon": true,
+    "semicolon": false,
     "variable-name": false,
     "whitespace": [true,
       "check-branch"

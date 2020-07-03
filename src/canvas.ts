@@ -5,6 +5,7 @@ export class Draw implements Idraw {
     #canvas!: HTMLCanvasElement
     #ctx!: CanvasRenderingContext2D
 
+    #frameLock = 0
     public frame = 0
     public width = 1000
     public height = 1000
@@ -55,12 +56,13 @@ export class Draw implements Idraw {
         }
     }
 
-    private mousePosition(ev: any) {
+    private mousePosition(ev: MouseEvent) {
+        if (this.frame === this.#frameLock) return
         const canvasPos = this.canvasPos
         this.pmouseX = this.mouseX
         this.pmouseY = this.mouseY
-        this.mouseX = Math.round(ev.pageX - canvasPos.left)
-        this.mouseY = Math.round(ev.pageY - canvasPos.top)
+        this.mouseX = Math.round(ev.pageX - canvasPos.left - window.scrollX)
+        this.mouseY = Math.round(ev.pageY - canvasPos.top - window.scrollY)
     }
 
     private mouseEventInit() {
@@ -135,9 +137,14 @@ export class Draw implements Idraw {
      * @param cb function for each frame call
      */
     public loop(cb: (ctx: CanvasRenderingContext2D) => void) {
-        this.frame ++
+        if (document.hidden === true) {
+            requestAnimationFrame(this.loop.bind(this, cb))
+            return
+        }
+        this.#frameLock = this.frame
         if (cb) cb(this.#ctx)
         else throw Error('without callback')
+        this.frame ++
         requestAnimationFrame(this.loop.bind(this, cb))
     }
 

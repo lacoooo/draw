@@ -123,11 +123,12 @@ var __classPrivateFieldGet = (undefined && undefined.__classPrivateFieldGet) || 
     }
     return privateMap.get(receiver);
 };
-var _canvas, _ctx;
+var _canvas, _ctx, _frameLock;
 class Draw {
     constructor(params) {
         _canvas.set(this, void 0);
         _ctx.set(this, void 0);
+        _frameLock.set(this, 0);
         this.frame = 0;
         this.width = 1000;
         this.height = 1000;
@@ -172,11 +173,13 @@ class Draw {
         };
     }
     mousePosition(ev) {
+        if (this.frame === __classPrivateFieldGet(this, _frameLock))
+            return;
         const canvasPos = this.canvasPos;
         this.pmouseX = this.mouseX;
         this.pmouseY = this.mouseY;
-        this.mouseX = Math.round(ev.pageX - canvasPos.left);
-        this.mouseY = Math.round(ev.pageY - canvasPos.top);
+        this.mouseX = Math.round(ev.pageX - canvasPos.left - window.scrollX);
+        this.mouseY = Math.round(ev.pageY - canvasPos.top - window.scrollY);
     }
     mouseEventInit() {
         this.onmousemoveInit();
@@ -217,11 +220,16 @@ class Draw {
         }
     }
     loop(cb) {
-        this.frame++;
+        if (document.hidden === true) {
+            requestAnimationFrame(this.loop.bind(this, cb));
+            return;
+        }
+        __classPrivateFieldSet(this, _frameLock, this.frame);
         if (cb)
             cb(__classPrivateFieldGet(this, _ctx));
         else
             throw Error('without callback');
+        this.frame++;
         requestAnimationFrame(this.loop.bind(this, cb));
     }
     strokeWeight(width) {
@@ -244,7 +252,7 @@ class Draw {
         this.stroke();
     }
 }
-_canvas = new WeakMap(), _ctx = new WeakMap();
+_canvas = new WeakMap(), _ctx = new WeakMap(), _frameLock = new WeakMap();
 
 
 /***/ }),
