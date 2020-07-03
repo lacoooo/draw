@@ -2,38 +2,49 @@ import { Idraw, Isetup } from './types'
 
 export class Draw implements Idraw {
 
-    protected _canvas: HTMLCanvasElement
-    protected _ctx: CanvasRenderingContext2D
+    #canvas!: HTMLCanvasElement
+    protected _ctx!: CanvasRenderingContext2D
+
     public frame = 0
     public width = 1000
     public height = 1000
     public mouseX = 0
     public mouseY = 0
+    public mouseDown = false
 
     constructor(params?: Isetup) {
+
+        this.canvasElementInit(params)
+
+        this.canvasSizeInit(params)
+
+        this.mouseEventInit()
+    }
+
+    protected canvasElementInit(params?: Isetup) {
         const { canvasId } = params || {}
         if (canvasId) {
             const canvas = document.getElementById(canvasId) as HTMLCanvasElement
-            if (canvas !== null) this._canvas = canvas
-            else this._canvas = this._createElement("canvas") as HTMLCanvasElement
+            if (canvas !== null) this.#canvas = canvas
+            else this.#canvas = this._createElement("canvas") as HTMLCanvasElement
         }
         else {
-            this._canvas = this._createElement("canvas") as HTMLCanvasElement
-            document.body.appendChild(this._canvas)
+            this.#canvas = this._createElement("canvas") as HTMLCanvasElement
+            document.body.appendChild(this.#canvas)
         }
-        this._ctx = this._canvas.getContext('2d') as CanvasRenderingContext2D
+        this._ctx = this.#canvas.getContext('2d') as CanvasRenderingContext2D
+    }
 
+    private canvasSizeInit(params?: Isetup) {
         const { width, height } = params || {}
-        this._canvas.width = width || this.width
-        this._canvas.height = height || this.height
-        this.width = this._canvas.width
-        this.height = this._canvas.height
-
-        this.onmousemoveInit()
+        this.#canvas.width = width || this.width
+        this.#canvas.height = height || this.height
+        this.width = this.#canvas.width
+        this.height = this.#canvas.height
     }
 
     get canvasPos() {
-        const pos = this._canvas.getBoundingClientRect()
+        const pos = this.#canvas.getBoundingClientRect()
         return {
             left: pos.left,
             top: pos.top,
@@ -43,14 +54,47 @@ export class Draw implements Idraw {
     }
 
     private mousePosition(ev: any) {
-        console.log(this.mouseX, this.mouseY)
         const canvasPos = this.canvasPos
         this.mouseX = Math.round(ev.pageX - canvasPos.left)
         this.mouseY = Math.round(ev.pageY - canvasPos.top)
     }
 
+    private mouseEventInit() {
+
+        this.onmousemoveInit()
+        this.onmousedownInit()
+        this.onmouseupInit()
+    }
+
+    /**
+     * onMouseMove event of canvas element
+     */
     private onmousemoveInit() {
-        this._canvas.onmousemove = this.mousePosition.bind(this)
+        this.#canvas.onmousemove = this.mousePosition.bind(this)
+    }
+
+    /**
+     * onmousedown event of document
+     */
+    private onmousedownInit() {
+        document.body.onmousedown = (e) => {
+            e = e || window.event
+            if (e.button === 0) {
+                this.mouseDown = true
+            }
+        }
+    }
+    
+    /**
+     * onmouseup event of document
+     */
+    private onmouseupInit() {
+        document.body.onmouseup = (e) => {
+            e = e || window.event
+            if (e.button === 0) {
+                this.mouseDown = false
+            }
+        }
     }
 
     /**

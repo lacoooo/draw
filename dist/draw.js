@@ -110,35 +110,57 @@ return /******/ (function(modules) { // webpackBootstrap
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Draw", function() { return Draw; });
+var __classPrivateFieldSet = (undefined && undefined.__classPrivateFieldSet) || function (receiver, privateMap, value) {
+    if (!privateMap.has(receiver)) {
+        throw new TypeError("attempted to set private field on non-instance");
+    }
+    privateMap.set(receiver, value);
+    return value;
+};
+var __classPrivateFieldGet = (undefined && undefined.__classPrivateFieldGet) || function (receiver, privateMap) {
+    if (!privateMap.has(receiver)) {
+        throw new TypeError("attempted to get private field on non-instance");
+    }
+    return privateMap.get(receiver);
+};
+var _canvas;
 class Draw {
     constructor(params) {
+        _canvas.set(this, void 0);
         this.frame = 0;
         this.width = 1000;
         this.height = 1000;
         this.mouseX = 0;
         this.mouseY = 0;
+        this.mouseDown = false;
+        this.canvasElementInit(params);
+        this.canvasSizeInit(params);
+        this.mouseEventInit();
+    }
+    canvasElementInit(params) {
         const { canvasId } = params || {};
         if (canvasId) {
             const canvas = document.getElementById(canvasId);
             if (canvas !== null)
-                this._canvas = canvas;
+                __classPrivateFieldSet(this, _canvas, canvas);
             else
-                this._canvas = this._createElement("canvas");
+                __classPrivateFieldSet(this, _canvas, this._createElement("canvas"));
         }
         else {
-            this._canvas = this._createElement("canvas");
-            document.body.appendChild(this._canvas);
+            __classPrivateFieldSet(this, _canvas, this._createElement("canvas"));
+            document.body.appendChild(__classPrivateFieldGet(this, _canvas));
         }
-        this._ctx = this._canvas.getContext('2d');
+        this._ctx = __classPrivateFieldGet(this, _canvas).getContext('2d');
+    }
+    canvasSizeInit(params) {
         const { width, height } = params || {};
-        this._canvas.width = width || this.width;
-        this._canvas.height = height || this.height;
-        this.width = this._canvas.width;
-        this.height = this._canvas.height;
-        this.onmousemoveInit();
+        __classPrivateFieldGet(this, _canvas).width = width || this.width;
+        __classPrivateFieldGet(this, _canvas).height = height || this.height;
+        this.width = __classPrivateFieldGet(this, _canvas).width;
+        this.height = __classPrivateFieldGet(this, _canvas).height;
     }
     get canvasPos() {
-        const pos = this._canvas.getBoundingClientRect();
+        const pos = __classPrivateFieldGet(this, _canvas).getBoundingClientRect();
         return {
             left: pos.left,
             top: pos.top,
@@ -147,13 +169,33 @@ class Draw {
         };
     }
     mousePosition(ev) {
-        console.log(this.mouseX, this.mouseY);
         const canvasPos = this.canvasPos;
         this.mouseX = Math.round(ev.pageX - canvasPos.left);
         this.mouseY = Math.round(ev.pageY - canvasPos.top);
     }
+    mouseEventInit() {
+        this.onmousemoveInit();
+        this.onmousedownInit();
+        this.onmouseupInit();
+    }
     onmousemoveInit() {
-        this._canvas.onmousemove = this.mousePosition.bind(this);
+        __classPrivateFieldGet(this, _canvas).onmousemove = this.mousePosition.bind(this);
+    }
+    onmousedownInit() {
+        document.body.onmousedown = (e) => {
+            e = e || window.event;
+            if (e.button === 0) {
+                this.mouseDown = true;
+            }
+        };
+    }
+    onmouseupInit() {
+        document.body.onmouseup = (e) => {
+            e = e || window.event;
+            if (e.button === 0) {
+                this.mouseDown = false;
+            }
+        };
     }
     _createElement(elem = "div") {
         const d = document.createElement(elem);
@@ -192,6 +234,7 @@ class Draw {
         this.stroke();
     }
 }
+_canvas = new WeakMap();
 
 
 /***/ }),
