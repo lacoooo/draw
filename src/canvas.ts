@@ -6,8 +6,12 @@ export class Draw extends Input implements Idraw {
     #canvas!: HTMLCanvasElement
     #ctx!: CanvasRenderingContext2D
 
-    public width = 1000
-    public height = 1000
+    get width() { return this.#canvas.width }
+    set width(w: number) { this.#canvas.width = w }
+
+    get height() { return this.#canvas.height }
+    set height(h: number) { this.#canvas.height = h }
+
     public frame = 0
 
     constructor(params?: Isetup) {
@@ -16,7 +20,7 @@ export class Draw extends Input implements Idraw {
         this.canvasElementInit(params)
 
         this.canvasSizeInit(params)
-        
+
         this.mouseEventInit(this.#canvas)
     }
 
@@ -36,20 +40,8 @@ export class Draw extends Input implements Idraw {
 
     private canvasSizeInit(params?: Isetup) {
         const { width, height } = params || {}
-        this.#canvas.width = width || this.width
-        this.#canvas.height = height || this.height
-        this.width = this.#canvas.width
-        this.height = this.#canvas.height
-    }
-
-    /**
-     * Register mouse down events
-     * @param cb Function triggered on mouse down
-     */
-    public click(cb: (key: KeyboardEvent['key'], keyCode: KeyboardEvent['keyCode']) => void) {
-        document.onkeydown = e => {
-            cb(e.key, e.keyCode)
-        }
+        this.width = width || 1000
+        this.height = height || 1000
     }
 
     /**
@@ -82,7 +74,7 @@ export class Draw extends Input implements Idraw {
         }
         if (cb) cb(this.#ctx)
         else throw Error('without callback')
-        this.frame ++
+        this.frame++
         requestAnimationFrame(this.loop.bind(this, cb))
     }
 

@@ -64,4 +64,14 @@ export class Input {
             }
         }
     }
+    
+    /**
+     * Register mouse down events
+     * @param cb Function triggered on mouse down
+     */
+    public click(cb: (key: KeyboardEvent['key'], keyCode: KeyboardEvent['keyCode']) => void) {
+        document.onkeydown = e => {
+            cb(e.key, e.keyCode)
+        }
+    }
 }
