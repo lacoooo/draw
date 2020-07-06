@@ -74,6 +74,7 @@ export class Draw extends Input implements Idraw {
         }
         if (cb) cb(this.#ctx)
         else throw Error('without callback')
+        this.pmousePositionUpdate()
         this.frame++
         requestAnimationFrame(this.loop.bind(this, cb))
     }

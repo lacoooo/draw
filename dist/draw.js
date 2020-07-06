@@ -131,13 +131,15 @@ class Draw extends _input__WEBPACK_IMPORTED_MODULE_0__["Input"] {
         super();
         _canvas.set(this, void 0);
         _ctx.set(this, void 0);
-        this.width = 1000;
-        this.height = 1000;
         this.frame = 0;
         this.canvasElementInit(params);
         this.canvasSizeInit(params);
         this.mouseEventInit(__classPrivateFieldGet(this, _canvas));
     }
+    get width() { return __classPrivateFieldGet(this, _canvas).width; }
+    set width(w) { __classPrivateFieldGet(this, _canvas).width = w; }
+    get height() { return __classPrivateFieldGet(this, _canvas).height; }
+    set height(h) { __classPrivateFieldGet(this, _canvas).height = h; }
     canvasElementInit(params) {
         const { canvasId } = params || {};
         if (canvasId) {
@@ -155,15 +157,8 @@ class Draw extends _input__WEBPACK_IMPORTED_MODULE_0__["Input"] {
     }
     canvasSizeInit(params) {
         const { width, height } = params || {};
-        __classPrivateFieldGet(this, _canvas).width = width || this.width;
-        __classPrivateFieldGet(this, _canvas).height = height || this.height;
-        this.width = __classPrivateFieldGet(this, _canvas).width;
-        this.height = __classPrivateFieldGet(this, _canvas).height;
-    }
-    click(cb) {
-        document.onkeydown = e => {
-            cb(e.key, e.keyCode);
-        };
+        this.width = width || 1000;
+        this.height = height || 1000;
     }
     _createElement(elem = "div") {
         const d = document.createElement(elem);
@@ -183,6 +178,7 @@ class Draw extends _input__WEBPACK_IMPORTED_MODULE_0__["Input"] {
             cb(__classPrivateFieldGet(this, _ctx));
         else
             throw Error('without callback');
+        this.pmousePositionUpdate();
         this.frame++;
         requestAnimationFrame(this.loop.bind(this, cb));
     }
@@ -244,6 +240,7 @@ window.Vector = _vector__WEBPACK_IMPORTED_MODULE_2__["Vector"];
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Input", function() { return Input; });
+/* harmony import */ var _vector__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./vector */ "./src/vector.ts");
 var __classPrivateFieldGet = (undefined && undefined.__classPrivateFieldGet) || function (receiver, privateMap) {
     if (!privateMap.has(receiver)) {
         throw new TypeError("attempted to get private field on non-instance");
@@ -257,15 +254,28 @@ var __classPrivateFieldSet = (undefined && undefined.__classPrivateFieldSet) || 
     privateMap.set(receiver, value);
     return value;
 };
-var _canvas;
+var _canvas, _mousePos;
+
 class Input {
     constructor() {
         _canvas.set(this, void 0);
-        this.mouseDown = false;
-        this.mouseX = 0;
+        _mousePos.set(this, new _vector__WEBPACK_IMPORTED_MODULE_0__["Vector"]());
         this.pmouseX = 0;
-        this.mouseY = 0;
         this.pmouseY = 0;
+        this.mouseHistory = [];
+        this.mouseDown = false;
+    }
+    get mouseX() {
+        return __classPrivateFieldGet(this, _mousePos).x;
+    }
+    set mouseX(x) {
+        __classPrivateFieldGet(this, _mousePos).x = x;
+    }
+    get mouseY() {
+        return __classPrivateFieldGet(this, _mousePos).y;
+    }
+    set mouseY(y) {
+        __classPrivateFieldGet(this, _mousePos).y = y;
     }
     get canvasPos() {
         const pos = __classPrivateFieldGet(this, _canvas).getBoundingClientRect();
@@ -278,10 +288,19 @@ class Input {
     }
     mousePositionUpdate(ev) {
         const canvasPos = this.canvasPos;
-        this.pmouseX = this.mouseX;
-        this.pmouseY = this.mouseY;
         this.mouseX = Math.round(ev.pageX - canvasPos.left - window.scrollX);
         this.mouseY = Math.round(ev.pageY - canvasPos.top - window.scrollY);
+        this.pushMouseHistory();
+    }
+    pushMouseHistory() {
+        this.mouseHistory.unshift(__classPrivateFieldGet(this, _mousePos));
+        if (this.mouseHistory.length > 10) {
+            this.mouseHistory.pop();
+        }
+    }
+    pmousePositionUpdate() {
+        this.pmouseX = this.mouseX;
+        this.pmouseY = this.mouseY;
     }
     mouseEventInit(canvas) {
         __classPrivateFieldSet(this, _canvas, canvas);
@@ -308,8 +327,13 @@ class Input {
             }
         };
     }
+    click(cb) {
+        document.onkeydown = e => {
+            cb(e.key, e.keyCode);
+        };
+    }
 }
-_canvas = new WeakMap();
+_canvas = new WeakMap(), _mousePos = new WeakMap();
 
 
 /***/ }),
@@ -411,9 +435,9 @@ class Vector extends VectorStatic {
             __classPrivateFieldSet(this, _z, z);
     }
     set(x, y, z) {
-        this.x = x || 0;
-        this.y = y || 0;
-        this.z = z || 0;
+        this.x = typeof x === 'number' ? x : this.x;
+        this.y = typeof y === 'number' ? y : this.y;
+        this.z = typeof z === 'number' ? z : this.z;
         return this;
     }
     copy() {

@@ -1,11 +1,29 @@
+import { Vector } from './vector'
+
 export class Input {
 
     #canvas!: HTMLCanvasElement
-    public mouseDown = false
-    public mouseX = 0
+    #mousePos = new Vector()
+
+    get mouseX() {
+        return this.#mousePos.x
+    }
+    set mouseX(x: number) {
+        this.#mousePos.x = x
+    }
+    get mouseY() {
+        return this.#mousePos.y
+    }
+    set mouseY(y: number) {
+        this.#mousePos.y = y
+    }
+    
     public pmouseX = 0
-    public mouseY = 0
     public pmouseY = 0
+
+    public mouseHistory: Vector[] = []
+
+    public mouseDown = false
 
     get canvasPos() {
         const pos = this.#canvas.getBoundingClientRect()
@@ -19,10 +37,22 @@ export class Input {
 
     private mousePositionUpdate(ev: MouseEvent) {
         const canvasPos = this.canvasPos
-        this.pmouseX = this.mouseX
-        this.pmouseY = this.mouseY
         this.mouseX = Math.round(ev.pageX - canvasPos.left - window.scrollX)
         this.mouseY = Math.round(ev.pageY - canvasPos.top - window.scrollY)
+
+        this.pushMouseHistory()
+    }
+
+    private pushMouseHistory() {
+        this.mouseHistory.unshift(this.#mousePos)
+        if (this.mouseHistory.length > 10) {
+            this.mouseHistory.pop()
+        }
+    }
+
+    protected pmousePositionUpdate() {
+        this.pmouseX = this.mouseX
+        this.pmouseY = this.mouseY
     }
 
     protected mouseEventInit(canvas: HTMLCanvasElement) {

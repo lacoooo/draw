@@ -40,9 +40,9 @@ export class Vector extends VectorStatic {
     }
 
     set(x?: number, y?: number, z?: number): this {
-        this.x = x || 0
-        this.y = y || 0
-        this.z = z || 0
+        this.x = typeof x === 'number' ? x : this.x
+        this.y = typeof y === 'number' ? y : this.y
+        this.z = typeof z === 'number' ? z : this.z
         return this
     }
 
