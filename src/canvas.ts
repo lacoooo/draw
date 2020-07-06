@@ -1,30 +1,26 @@
 import { Idraw, Isetup } from './types'
+import { Input } from './input'
 
-export class Draw implements Idraw {
+export class Draw extends Input implements Idraw {
 
     #canvas!: HTMLCanvasElement
     #ctx!: CanvasRenderingContext2D
 
-    #frameLock = 0
-    public frame = 0
     public width = 1000
     public height = 1000
-    public mouseX = 0
-    public pmouseX = 0
-    public mouseY = 0
-    public pmouseY = 0
-    public mouseDown = false
+    public frame = 0
 
     constructor(params?: Isetup) {
+        super()
 
         this.canvasElementInit(params)
 
         this.canvasSizeInit(params)
-
-        this.mouseEventInit()
+        
+        this.mouseEventInit(this.#canvas)
     }
 
-    protected canvasElementInit(params?: Isetup) {
+    private canvasElementInit(params?: Isetup) {
         const { canvasId } = params || {}
         if (canvasId) {
             const canvas = document.getElementById(canvasId) as HTMLCanvasElement
@@ -44,63 +40,6 @@ export class Draw implements Idraw {
         this.#canvas.height = height || this.height
         this.width = this.#canvas.width
         this.height = this.#canvas.height
-    }
-
-    get canvasPos() {
-        const pos = this.#canvas.getBoundingClientRect()
-        return {
-            left: pos.left,
-            top: pos.top,
-            right: pos.right,
-            bottom: pos.bottom
-        }
-    }
-
-    private mousePosition(ev: MouseEvent) {
-        if (this.frame === this.#frameLock) return
-        const canvasPos = this.canvasPos
-        this.pmouseX = this.mouseX
-        this.pmouseY = this.mouseY
-        this.mouseX = Math.round(ev.pageX - canvasPos.left - window.scrollX)
-        this.mouseY = Math.round(ev.pageY - canvasPos.top - window.scrollY)
-    }
-
-    private mouseEventInit() {
-
-        this.onmousemoveInit()
-        this.onmousedownInit()
-        this.onmouseupInit()
-    }
-
-    /**
-     * onMouseMove event of canvas element
-     */
-    private onmousemoveInit() {
-        this.#canvas.onmousemove = this.mousePosition.bind(this)
-    }
-
-    /**
-     * onmousedown event of document
-     */
-    private onmousedownInit() {
-        document.body.onmousedown = (e) => {
-            e = e || window.event
-            if (e.button === 0) {
-                this.mouseDown = true
-            }
-        }
-    }
-    
-    /**
-     * onmouseup event of document
-     */
-    private onmouseupInit() {
-        document.body.onmouseup = (e) => {
-            e = e || window.event
-            if (e.button === 0) {
-                this.mouseDown = false
-            }
-        }
     }
 
     /**
@@ -141,7 +80,6 @@ export class Draw implements Idraw {
             requestAnimationFrame(this.loop.bind(this, cb))
             return
         }
-        this.#frameLock = this.frame
         if (cb) cb(this.#ctx)
         else throw Error('without callback')
         this.frame ++

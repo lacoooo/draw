@@ -110,6 +110,13 @@ return /******/ (function(modules) { // webpackBootstrap
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Draw", function() { return Draw; });
+/* harmony import */ var _input__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./input */ "./src/input.ts");
+var __classPrivateFieldGet = (undefined && undefined.__classPrivateFieldGet) || function (receiver, privateMap) {
+    if (!privateMap.has(receiver)) {
+        throw new TypeError("attempted to get private field on non-instance");
+    }
+    return privateMap.get(receiver);
+};
 var __classPrivateFieldSet = (undefined && undefined.__classPrivateFieldSet) || function (receiver, privateMap, value) {
     if (!privateMap.has(receiver)) {
         throw new TypeError("attempted to set private field on non-instance");
@@ -117,29 +124,19 @@ var __classPrivateFieldSet = (undefined && undefined.__classPrivateFieldSet) || 
     privateMap.set(receiver, value);
     return value;
 };
-var __classPrivateFieldGet = (undefined && undefined.__classPrivateFieldGet) || function (receiver, privateMap) {
-    if (!privateMap.has(receiver)) {
-        throw new TypeError("attempted to get private field on non-instance");
-    }
-    return privateMap.get(receiver);
-};
-var _canvas, _ctx, _frameLock;
-class Draw {
+var _canvas, _ctx;
+
+class Draw extends _input__WEBPACK_IMPORTED_MODULE_0__["Input"] {
     constructor(params) {
+        super();
         _canvas.set(this, void 0);
         _ctx.set(this, void 0);
-        _frameLock.set(this, 0);
-        this.frame = 0;
         this.width = 1000;
         this.height = 1000;
-        this.mouseX = 0;
-        this.pmouseX = 0;
-        this.mouseY = 0;
-        this.pmouseY = 0;
-        this.mouseDown = false;
+        this.frame = 0;
         this.canvasElementInit(params);
         this.canvasSizeInit(params);
-        this.mouseEventInit();
+        this.mouseEventInit(__classPrivateFieldGet(this, _canvas));
     }
     canvasElementInit(params) {
         const { canvasId } = params || {};
@@ -163,48 +160,6 @@ class Draw {
         this.width = __classPrivateFieldGet(this, _canvas).width;
         this.height = __classPrivateFieldGet(this, _canvas).height;
     }
-    get canvasPos() {
-        const pos = __classPrivateFieldGet(this, _canvas).getBoundingClientRect();
-        return {
-            left: pos.left,
-            top: pos.top,
-            right: pos.right,
-            bottom: pos.bottom
-        };
-    }
-    mousePosition(ev) {
-        if (this.frame === __classPrivateFieldGet(this, _frameLock))
-            return;
-        const canvasPos = this.canvasPos;
-        this.pmouseX = this.mouseX;
-        this.pmouseY = this.mouseY;
-        this.mouseX = Math.round(ev.pageX - canvasPos.left - window.scrollX);
-        this.mouseY = Math.round(ev.pageY - canvasPos.top - window.scrollY);
-    }
-    mouseEventInit() {
-        this.onmousemoveInit();
-        this.onmousedownInit();
-        this.onmouseupInit();
-    }
-    onmousemoveInit() {
-        __classPrivateFieldGet(this, _canvas).onmousemove = this.mousePosition.bind(this);
-    }
-    onmousedownInit() {
-        document.body.onmousedown = (e) => {
-            e = e || window.event;
-            if (e.button === 0) {
-                this.mouseDown = true;
-            }
-        };
-    }
-    onmouseupInit() {
-        document.body.onmouseup = (e) => {
-            e = e || window.event;
-            if (e.button === 0) {
-                this.mouseDown = false;
-            }
-        };
-    }
     click(cb) {
         document.onkeydown = e => {
             cb(e.key, e.keyCode);
@@ -224,7 +179,6 @@ class Draw {
             requestAnimationFrame(this.loop.bind(this, cb));
             return;
         }
-        __classPrivateFieldSet(this, _frameLock, this.frame);
         if (cb)
             cb(__classPrivateFieldGet(this, _ctx));
         else
@@ -252,7 +206,7 @@ class Draw {
         this.stroke();
     }
 }
-_canvas = new WeakMap(), _ctx = new WeakMap(), _frameLock = new WeakMap();
+_canvas = new WeakMap(), _ctx = new WeakMap();
 
 
 /***/ }),
@@ -268,11 +222,94 @@ _canvas = new WeakMap(), _ctx = new WeakMap(), _frameLock = new WeakMap();
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _canvas__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./canvas */ "./src/canvas.ts");
 /* harmony import */ var _num__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./num */ "./src/num.ts");
+/* harmony import */ var _vector__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./vector */ "./src/vector.ts");
+
 
 
 window.Draw = _canvas__WEBPACK_IMPORTED_MODULE_0__["Draw"];
 window.Num = _num__WEBPACK_IMPORTED_MODULE_1__["Num"];
 window.Geom = _num__WEBPACK_IMPORTED_MODULE_1__["Geom"];
+window.Vector = _vector__WEBPACK_IMPORTED_MODULE_2__["Vector"];
+
+
+/***/ }),
+
+/***/ "./src/input.ts":
+/*!**********************!*\
+  !*** ./src/input.ts ***!
+  \**********************/
+/*! exports provided: Input */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Input", function() { return Input; });
+var __classPrivateFieldGet = (undefined && undefined.__classPrivateFieldGet) || function (receiver, privateMap) {
+    if (!privateMap.has(receiver)) {
+        throw new TypeError("attempted to get private field on non-instance");
+    }
+    return privateMap.get(receiver);
+};
+var __classPrivateFieldSet = (undefined && undefined.__classPrivateFieldSet) || function (receiver, privateMap, value) {
+    if (!privateMap.has(receiver)) {
+        throw new TypeError("attempted to set private field on non-instance");
+    }
+    privateMap.set(receiver, value);
+    return value;
+};
+var _canvas;
+class Input {
+    constructor() {
+        _canvas.set(this, void 0);
+        this.mouseDown = false;
+        this.mouseX = 0;
+        this.pmouseX = 0;
+        this.mouseY = 0;
+        this.pmouseY = 0;
+    }
+    get canvasPos() {
+        const pos = __classPrivateFieldGet(this, _canvas).getBoundingClientRect();
+        return {
+            left: pos.left,
+            top: pos.top,
+            right: pos.right,
+            bottom: pos.bottom
+        };
+    }
+    mousePositionUpdate(ev) {
+        const canvasPos = this.canvasPos;
+        this.pmouseX = this.mouseX;
+        this.pmouseY = this.mouseY;
+        this.mouseX = Math.round(ev.pageX - canvasPos.left - window.scrollX);
+        this.mouseY = Math.round(ev.pageY - canvasPos.top - window.scrollY);
+    }
+    mouseEventInit(canvas) {
+        __classPrivateFieldSet(this, _canvas, canvas);
+        this.onmousemoveInit();
+        this.onmousedownInit();
+        this.onmouseupInit();
+    }
+    onmousemoveInit() {
+        __classPrivateFieldGet(this, _canvas).onmousemove = this.mousePositionUpdate.bind(this);
+    }
+    onmousedownInit() {
+        document.body.onmousedown = (e) => {
+            e = e || window.event;
+            if (e.button === 0) {
+                this.mouseDown = true;
+            }
+        };
+    }
+    onmouseupInit() {
+        document.body.onmouseup = (e) => {
+            e = e || window.event;
+            if (e.button === 0) {
+                this.mouseDown = false;
+            }
+        };
+    }
+}
+_canvas = new WeakMap();
 
 
 /***/ }),
@@ -309,6 +346,146 @@ class Num {
 }
 class Geom {
 }
+
+
+/***/ }),
+
+/***/ "./src/vector.ts":
+/*!***********************!*\
+  !*** ./src/vector.ts ***!
+  \***********************/
+/*! exports provided: Vector */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Vector", function() { return Vector; });
+var __classPrivateFieldGet = (undefined && undefined.__classPrivateFieldGet) || function (receiver, privateMap) {
+    if (!privateMap.has(receiver)) {
+        throw new TypeError("attempted to get private field on non-instance");
+    }
+    return privateMap.get(receiver);
+};
+var __classPrivateFieldSet = (undefined && undefined.__classPrivateFieldSet) || function (receiver, privateMap, value) {
+    if (!privateMap.has(receiver)) {
+        throw new TypeError("attempted to set private field on non-instance");
+    }
+    privateMap.set(receiver, value);
+    return value;
+};
+var _x, _y, _z;
+class VectorStatic {
+    static add(vectA, vectB) {
+        return new Vector(vectA.x + vectB.x, vectA.y + vectB.y, vectA.z + vectB.z);
+    }
+}
+class Vector extends VectorStatic {
+    constructor(x, y, z) {
+        super();
+        _x.set(this, 0);
+        _y.set(this, 0);
+        _z.set(this, 0);
+        this.x = x || 0;
+        this.y = y || 0;
+        this.z = z || 0;
+    }
+    get x() {
+        return __classPrivateFieldGet(this, _x);
+    }
+    set x(x) {
+        if (typeof x === 'number')
+            __classPrivateFieldSet(this, _x, x);
+    }
+    get y() {
+        return __classPrivateFieldGet(this, _y);
+    }
+    set y(y) {
+        if (typeof y === 'number')
+            __classPrivateFieldSet(this, _y, y);
+    }
+    get z() {
+        return __classPrivateFieldGet(this, _z);
+    }
+    set z(z) {
+        if (typeof z === 'number')
+            __classPrivateFieldSet(this, _z, z);
+    }
+    set(x, y, z) {
+        this.x = x || 0;
+        this.y = y || 0;
+        this.z = z || 0;
+        return this;
+    }
+    copy() {
+        return new Vector(this.x, this.y, this.z);
+    }
+    add(x, y, z) {
+        if (x instanceof Vector) {
+            this.x += x.x || 0;
+            this.y += x.y || 0;
+            this.z += x.z || 0;
+            return this;
+        }
+        this.x += x || 0;
+        this.y += y || 0;
+        this.z += z || 0;
+        return this;
+    }
+    sub(x, y, z) {
+        if (x instanceof Vector) {
+            this.x -= x.x || 0;
+            this.y -= x.y || 0;
+            this.z -= x.z || 0;
+            return this;
+        }
+        this.x -= x || 0;
+        this.y -= y || 0;
+        this.z -= z || 0;
+        return this;
+    }
+    mult(n) {
+        if (!(typeof n === 'number' && isFinite(n))) {
+            console.warn('n is undefined or not a finite number');
+            return this;
+        }
+        this.x *= n;
+        this.y *= n;
+        this.z *= n;
+        return this;
+    }
+    div(n) {
+        if (!(typeof n === 'number' && isFinite(n))) {
+            console.warn('n is undefined or not a finite number');
+            return this;
+        }
+        if (n === 0) {
+            console.warn('n is 0');
+            return this;
+        }
+        this.x /= n;
+        this.y /= n;
+        this.z /= n;
+        return this;
+    }
+    dist(x, y, z) {
+        if (x instanceof Vector) {
+            return Math.sqrt(Math.pow(x.x - this.x, 2) +
+                Math.pow(x.y - this.y, 2) +
+                Math.pow(x.z - this.z, 2));
+        }
+        return Math.sqrt(Math.pow(x - this.x, 2) +
+            Math.pow(y - this.y, 2) +
+            Math.pow(z - this.z, 2));
+    }
+    mag() {
+        return Math.sqrt(Math.pow(this.x, 2) +
+            Math.pow(this.y, 2) +
+            Math.pow(this.z, 2));
+    }
+    magSq() {
+    }
+}
+_x = new WeakMap(), _y = new WeakMap(), _z = new WeakMap();
 
 
 /***/ })
