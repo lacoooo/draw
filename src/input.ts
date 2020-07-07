@@ -5,6 +5,10 @@ export class Input {
     #canvas!: HTMLCanvasElement
     #mousePos = new Vector()
 
+    #mouseHistoryCount = 10
+    public frame = 0
+    public frameLock = 0
+
     get mouseX() {
         return this.#mousePos.x
     }
@@ -17,11 +21,30 @@ export class Input {
     set mouseY(y: number) {
         this.#mousePos.y = y
     }
-    
-    public pmouseX = 0
-    public pmouseY = 0
 
-    public mouseHistory: Vector[] = []
+    get pmouseX() {
+        const len = this.mousePosHistory.length
+        if (len > 2) {
+            return this.mousePosHistory[1].x
+        }
+        else if (len === 1) {
+            return this.mousePosHistory[0].x
+        }
+        return this.mouseX
+    }
+
+    get pmouseY() {
+        const len = this.mousePosHistory.length
+        if (len > 2) {
+            return this.mousePosHistory[1].y
+        }
+        else if (len === 1) {
+            return this.mousePosHistory[0].y
+        }
+        return this.mouseY
+    }
+
+    public mousePosHistory: Vector[] = []
 
     public mouseDown = false
 
@@ -35,27 +58,18 @@ export class Input {
         }
     }
 
-    private mousePositionUpdate(ev: MouseEvent) {
-        const canvasPos = this.canvasPos
-        this.mouseX = Math.round(ev.pageX - canvasPos.left - window.scrollX)
-        this.mouseY = Math.round(ev.pageY - canvasPos.top - window.scrollY)
-
-        this.pushMouseHistory()
+    public setMouseHistoryCount(count: number): void {
+        this.#mouseHistoryCount = count
     }
 
-    private pushMouseHistory() {
-        this.mouseHistory.unshift(this.#mousePos)
-        if (this.mouseHistory.length > 10) {
-            this.mouseHistory.pop()
+    protected pushMousePosHistory(currentMousePos: Vector): void {
+        this.mousePosHistory.unshift(currentMousePos)
+        if (this.mousePosHistory.length > this.#mouseHistoryCount) {
+            this.mousePosHistory.pop()
         }
     }
 
-    protected pmousePositionUpdate() {
-        this.pmouseX = this.mouseX
-        this.pmouseY = this.mouseY
-    }
-
-    protected mouseEventInit(canvas: HTMLCanvasElement) {
+    protected mouseEventInit(canvas: HTMLCanvasElement): void {
 
         this.#canvas = canvas
 
@@ -67,34 +81,58 @@ export class Input {
     /**
      * onMouseMove event of canvas element
      */
-    private onmousemoveInit() {
-        this.#canvas.onmousemove = this.mousePositionUpdate.bind(this)
+    private onmousemoveInit(): void {
+        this.#canvas.addEventListener(
+            'mousemove',
+            (ev: MouseEvent) => {
+                const canvasPos = this.canvasPos
+                let posX = 0, posY = 0
+                if (ev.pageX) {
+                    posX = ev.pageX
+                    posY = ev.pageY
+                } else if (ev.clientX) {
+                    posX = ev.clientX + document.documentElement.scrollLeft + document.body.scrollLeft
+                    posY = ev.clientY + document.documentElement.scrollTop + document.body.scrollTop
+                }
+                this.mouseX = Math.round(posX - canvasPos.left - window.scrollX)
+                this.mouseY = Math.round(posY - canvasPos.top - window.scrollY)
+            },
+            false
+        )
     }
 
     /**
      * onmousedown event of document
      */
-    private onmousedownInit() {
-        document.body.onmousedown = (e) => {
-            e = e || window.event
-            if (e.button === 0) {
-                this.mouseDown = true
-            }
-        }
+    private onmousedownInit(): void {
+        document.body.addEventListener(
+            'mousedown',
+            (ev: MouseEvent) => {
+                ev = ev || window.event
+                if (ev.button === 0) {
+                    this.mouseDown = true
+                }
+            },
+            false
+        )
     }
-    
+
     /**
      * onmouseup event of document
      */
-    private onmouseupInit() {
-        document.body.onmouseup = (e) => {
-            e = e || window.event
-            if (e.button === 0) {
-                this.mouseDown = false
-            }
-        }
+    private onmouseupInit(): void {
+        document.body.addEventListener(
+            'mouseup',
+            (ev: MouseEvent) => {
+                ev = ev || window.event
+                if (ev.button === 0) {
+                    this.mouseDown = false
+                }
+            },
+            false
+        )
     }
-    
+
     /**
      * Register mouse down events
      * @param cb Function triggered on mouse down

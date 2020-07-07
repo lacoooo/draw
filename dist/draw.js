@@ -111,6 +111,7 @@ return /******/ (function(modules) { // webpackBootstrap
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Draw", function() { return Draw; });
 /* harmony import */ var _input__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./input */ "./src/input.ts");
+/* harmony import */ var _vector__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./vector */ "./src/vector.ts");
 var __classPrivateFieldGet = (undefined && undefined.__classPrivateFieldGet) || function (receiver, privateMap) {
     if (!privateMap.has(receiver)) {
         throw new TypeError("attempted to get private field on non-instance");
@@ -124,7 +125,8 @@ var __classPrivateFieldSet = (undefined && undefined.__classPrivateFieldSet) || 
     privateMap.set(receiver, value);
     return value;
 };
-var _canvas, _ctx;
+var _canvas, _ctx, _preloadLeftCount;
+
 
 class Draw extends _input__WEBPACK_IMPORTED_MODULE_0__["Input"] {
     constructor(params) {
@@ -132,6 +134,7 @@ class Draw extends _input__WEBPACK_IMPORTED_MODULE_0__["Input"] {
         _canvas.set(this, void 0);
         _ctx.set(this, void 0);
         this.frame = 0;
+        _preloadLeftCount.set(this, 0);
         this.canvasElementInit(params);
         this.canvasSizeInit(params);
         this.mouseEventInit(__classPrivateFieldGet(this, _canvas));
@@ -164,22 +167,35 @@ class Draw extends _input__WEBPACK_IMPORTED_MODULE_0__["Input"] {
         const d = document.createElement(elem);
         return d;
     }
+    preload(cb) {
+        cb();
+    }
     setup(cb) {
-        if (cb) {
-            cb(__classPrivateFieldGet(this, _ctx));
+        if (!this.setupParams) {
+            this.setupParams = cb;
         }
+        if (__classPrivateFieldGet(this, _preloadLeftCount) > 0)
+            return;
+        if (cb)
+            cb(__classPrivateFieldGet(this, _ctx));
     }
     loop(cb) {
+        if (!this.loopParams) {
+            this.loopParams = cb;
+        }
+        if (__classPrivateFieldGet(this, _preloadLeftCount) > 0)
+            return;
         if (document.hidden === true) {
             requestAnimationFrame(this.loop.bind(this, cb));
             return;
         }
+        this.frame++;
+        const mousePos = new _vector__WEBPACK_IMPORTED_MODULE_1__["Vector"](this.mouseX, this.mouseY);
+        this.pushMousePosHistory(mousePos);
         if (cb)
             cb(__classPrivateFieldGet(this, _ctx));
         else
             throw Error('without callback');
-        this.pmousePositionUpdate();
-        this.frame++;
         requestAnimationFrame(this.loop.bind(this, cb));
     }
     strokeWeight(width) {
@@ -201,8 +217,30 @@ class Draw extends _input__WEBPACK_IMPORTED_MODULE_0__["Input"] {
         this.closePath();
         this.stroke();
     }
+    clear() {
+        __classPrivateFieldGet(this, _ctx).clearRect(0, 0, this.width, this.height);
+    }
+    async loadMedia(path) {
+        __classPrivateFieldSet(this, _preloadLeftCount, +__classPrivateFieldGet(this, _preloadLeftCount) + 1);
+        const res = await this.sleep(2000);
+        __classPrivateFieldSet(this, _preloadLeftCount, +__classPrivateFieldGet(this, _preloadLeftCount) - 1);
+        if (__classPrivateFieldGet(this, _preloadLeftCount) === 0) {
+            this.setup(this.setupParams);
+            this.loop(this.loopParams);
+        }
+    }
+    loadImage(path) {
+        return this.loadMedia(path);
+    }
+    sleep(time) {
+        return new Promise(r => {
+            setTimeout(() => {
+                r();
+            }, time);
+        });
+    }
 }
-_canvas = new WeakMap(), _ctx = new WeakMap();
+_canvas = new WeakMap(), _ctx = new WeakMap(), _preloadLeftCount = new WeakMap();
 
 
 /***/ }),
@@ -254,15 +292,16 @@ var __classPrivateFieldSet = (undefined && undefined.__classPrivateFieldSet) || 
     privateMap.set(receiver, value);
     return value;
 };
-var _canvas, _mousePos;
+var _canvas, _mousePos, _mouseHistoryCount;
 
 class Input {
     constructor() {
         _canvas.set(this, void 0);
         _mousePos.set(this, new _vector__WEBPACK_IMPORTED_MODULE_0__["Vector"]());
-        this.pmouseX = 0;
-        this.pmouseY = 0;
-        this.mouseHistory = [];
+        _mouseHistoryCount.set(this, 10);
+        this.frame = 0;
+        this.frameLock = 0;
+        this.mousePosHistory = [];
         this.mouseDown = false;
     }
     get mouseX() {
@@ -277,6 +316,26 @@ class Input {
     set mouseY(y) {
         __classPrivateFieldGet(this, _mousePos).y = y;
     }
+    get pmouseX() {
+        const len = this.mousePosHistory.length;
+        if (len > 2) {
+            return this.mousePosHistory[1].x;
+        }
+        else if (len === 1) {
+            return this.mousePosHistory[0].x;
+        }
+        return this.mouseX;
+    }
+    get pmouseY() {
+        const len = this.mousePosHistory.length;
+        if (len > 2) {
+            return this.mousePosHistory[1].y;
+        }
+        else if (len === 1) {
+            return this.mousePosHistory[0].y;
+        }
+        return this.mouseY;
+    }
     get canvasPos() {
         const pos = __classPrivateFieldGet(this, _canvas).getBoundingClientRect();
         return {
@@ -286,21 +345,14 @@ class Input {
             bottom: pos.bottom
         };
     }
-    mousePositionUpdate(ev) {
-        const canvasPos = this.canvasPos;
-        this.mouseX = Math.round(ev.pageX - canvasPos.left - window.scrollX);
-        this.mouseY = Math.round(ev.pageY - canvasPos.top - window.scrollY);
-        this.pushMouseHistory();
+    setMouseHistoryCount(count) {
+        __classPrivateFieldSet(this, _mouseHistoryCount, count);
     }
-    pushMouseHistory() {
-        this.mouseHistory.unshift(__classPrivateFieldGet(this, _mousePos));
-        if (this.mouseHistory.length > 10) {
-            this.mouseHistory.pop();
+    pushMousePosHistory(currentMousePos) {
+        this.mousePosHistory.unshift(currentMousePos);
+        if (this.mousePosHistory.length > __classPrivateFieldGet(this, _mouseHistoryCount)) {
+            this.mousePosHistory.pop();
         }
-    }
-    pmousePositionUpdate() {
-        this.pmouseX = this.mouseX;
-        this.pmouseY = this.mouseY;
     }
     mouseEventInit(canvas) {
         __classPrivateFieldSet(this, _canvas, canvas);
@@ -309,23 +361,36 @@ class Input {
         this.onmouseupInit();
     }
     onmousemoveInit() {
-        __classPrivateFieldGet(this, _canvas).onmousemove = this.mousePositionUpdate.bind(this);
+        __classPrivateFieldGet(this, _canvas).addEventListener('mousemove', (ev) => {
+            const canvasPos = this.canvasPos;
+            let posX = 0, posY = 0;
+            if (ev.pageX) {
+                posX = ev.pageX;
+                posY = ev.pageY;
+            }
+            else if (ev.clientX) {
+                posX = ev.clientX + document.documentElement.scrollLeft + document.body.scrollLeft;
+                posY = ev.clientY + document.documentElement.scrollTop + document.body.scrollTop;
+            }
+            this.mouseX = Math.round(posX - canvasPos.left - window.scrollX);
+            this.mouseY = Math.round(posY - canvasPos.top - window.scrollY);
+        }, false);
     }
     onmousedownInit() {
-        document.body.onmousedown = (e) => {
-            e = e || window.event;
-            if (e.button === 0) {
+        document.body.addEventListener('mousedown', (ev) => {
+            ev = ev || window.event;
+            if (ev.button === 0) {
                 this.mouseDown = true;
             }
-        };
+        }, false);
     }
     onmouseupInit() {
-        document.body.onmouseup = (e) => {
-            e = e || window.event;
-            if (e.button === 0) {
+        document.body.addEventListener('mouseup', (ev) => {
+            ev = ev || window.event;
+            if (ev.button === 0) {
                 this.mouseDown = false;
             }
-        };
+        }, false);
     }
     click(cb) {
         document.onkeydown = e => {
@@ -333,7 +398,7 @@ class Input {
         };
     }
 }
-_canvas = new WeakMap(), _mousePos = new WeakMap();
+_canvas = new WeakMap(), _mousePos = new WeakMap(), _mouseHistoryCount = new WeakMap();
 
 
 /***/ }),

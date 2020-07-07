@@ -10,9 +10,10 @@
             margin: 0;
             padding: 0;
         }
+
         canvas {
             display: block;
-            box-shadow: 0 0 30px rgba(0,0,0,0.1);
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
         }
     </style>
 </head>
@@ -25,31 +26,56 @@
             height: 800
         })
 
+        let img
+
+        d.preload(
+            () => {
+                d.loadImage('https://cdn2.jianshu.io/assets/default_avatar/8-a356878e44b45ab268a3b0bbaaadeeb7.jpg')
+            }
+        )
+
         d.setup(
             (ctx) => {
                 console.log(ctx)
                 ctx.lineWidth = 1
                 ctx.strokeStyle = 'rgba(200,0,0,0.1)'
+                d.setMouseHistoryCount(20)
             }
         )
 
         d.loop(
             (ctx) => {
-                if (d.mouseDown === false) return
-                const dist =
-                Math.sqrt(
-                    Math.pow(Math.abs(d.mouseX - d.pmouseX), 2) 
-                    +
-                    Math.pow(Math.abs(d.mouseY - d.pmouseY), 2) 
-                )
-                d.strokeWeight(dist)
-                d.line(d.pmouseX, d.pmouseY, d.mouseX, d.mouseY)
+                // if (d.mouseDown === false) return
+                // const dist =
+                // Math.sqrt(
+                //     Math.pow(Math.abs(d.mouseX - d.pmouseX), 2) 
+                //     +
+                //     Math.pow(Math.abs(d.mouseY - d.pmouseY), 2) 
+                // )
+                // d.strokeWeight(dist)
+                // d.line(d.pmouseX, d.pmouseY, d.mouseX, d.mouseY)
+                d.clear()
+                for(let i = 0; i < d.mousePosHistory.length - 1; i ++) {
+                    if (d.mousePosHistory.length < 2) continue
+                    const a = d.mousePosHistory[i]
+                    const b = d.mousePosHistory[i + 1]
+                    const dist =
+                        Math.sqrt(
+                            Math.pow(Math.abs(b.x - a.x), 2)
+                            +
+                            Math.pow(Math.abs(b.y - a.y), 2)
+                        )
+                    d.strokeWeight(dist)
+                    d.line(a.x, a.y, b.x, b.y)
+                }
             }
         )
 
         d.click(
             (e) => {
-                console.log(e)
+                if (e === ' ') {
+                    d.clear()
+                }
             }
         )
 
