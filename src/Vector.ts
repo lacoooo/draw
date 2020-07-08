@@ -7,9 +7,21 @@ export class Vec3 {
     static left = new Vec3(-1, 0)
     static right = new Vec3(1, 0)
 
-    // 公开静态方法：差
     public static diff(end: Vec3, start: Vec3): Vec3 {
         return new Vec3(end.x - start.x, end.y - start.y, end.y - start.y)
+    }
+
+    public static dot(vecA: Vec3, vecB: Vec3): number {
+        return vecA.x * vecB.x + vecA.y * vecB.y + vecA.z * vecB.z
+    }
+
+    public static getAngle (vecA: Vec3, vecB: Vec3, isRadian: boolean = false): number {
+        let dot: number = Vec3.dot( vecA, vecB )
+        let radian: number = Math.acos( dot / ( vecA.length * vecB.length ) ) ;
+        // if ( isRadian === false ) {
+        //   radian = Math2D.toDegree( radian )
+        // }
+        return radian
     }
 
     #vect: Float32Array
@@ -177,4 +189,9 @@ export class Vec3 {
         this.z *= scalar
         return this
     }
+
+    public dot(vec: Vec3): number {
+        return Vec3.dot(this, vec)
+    }
+    
 }

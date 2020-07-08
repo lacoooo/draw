@@ -499,6 +499,14 @@ class Vec3 {
     static diff(end, start) {
         return new Vec3(end.x - start.x, end.y - start.y, end.y - start.y);
     }
+    static dot(vecA, vecB) {
+        return vecA.x * vecB.x + vecA.y * vecB.y + vecA.z * vecB.z;
+    }
+    static getAngle(vecA, vecB, isRadian = false) {
+        let dot = Vec3.dot(vecA, vecB);
+        let radian = Math.acos(dot / (vecA.length * vecB.length));
+        return radian;
+    }
     get x() {
         return __classPrivateFieldGet(this, _vect)[0];
     }
@@ -640,6 +648,9 @@ class Vec3 {
         this.y *= scalar;
         this.z *= scalar;
         return this;
+    }
+    dot(vec) {
+        return Vec3.dot(this, vec);
     }
 }
 _vect = new WeakMap();
