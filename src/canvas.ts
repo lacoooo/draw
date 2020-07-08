@@ -1,6 +1,6 @@
 import { Idraw, Isetup } from './types'
 import { Input } from './input'
-import { Vector } from './vector'
+import { Vec3 } from './vector'
 
 export class Draw extends Input implements Idraw {
 
@@ -71,9 +71,9 @@ export class Draw extends Input implements Idraw {
         if (!this.setupParams) {
             this.setupParams = cb
         }
-        
+
         if (this.#preloadLeftCount > 0) return
-        
+
         if (cb) cb(this.#ctx)
     }
 
@@ -85,7 +85,7 @@ export class Draw extends Input implements Idraw {
         if (!this.loopParams) {
             this.loopParams = cb
         }
-        
+
         if (this.#preloadLeftCount > 0) return
 
         if (document.hidden === true) {
@@ -93,7 +93,7 @@ export class Draw extends Input implements Idraw {
             return
         }
         this.frame++
-        const mousePos = new Vector(this.mouseX, this.mouseY)
+        const mousePos = new Vec3(this.mouseX, this.mouseY)
         this.pushMousePosHistory(mousePos)
         if (cb) cb(this.#ctx)
         else throw Error('without callback')
@@ -141,26 +141,54 @@ export class Draw extends Input implements Idraw {
     public clear() {
         this.#ctx.clearRect(0, 0, this.width, this.height)
     }
-    
-    async loadMedia(path: string) {
-        this.#preloadLeftCount ++
-        const res = await this.sleep(2000)
-        this.#preloadLeftCount --
-        if (this.#preloadLeftCount === 0) {
-            this.setup(this.setupParams)
-            this.loop(this.loopParams)
-        }
+
+    public background(color: string) {
+        if (color) this.#ctx.fillStyle = color
+        this.#ctx.fillRect(0, 0, this.width, this.height)
     }
 
-    loadImage(path: string) {
-        return this.loadMedia(path)
+    async loadMedia(path: string) {
+        this.#preloadLeftCount ++
+
+        const res = await fetch(path, { mode: 'cors' })
+            .then(res => {
+                if(res.ok) {
+                    return res.blob()
+                }
+                throw new Error('Network response was not ok.')
+            })
+            .then(myBlob => {
+                var objectURL = URL.createObjectURL(myBlob)
+                return objectURL
+            })
+            .catch(err => {
+                throw new Error('There has been a problem with your fetch operation: ' + err.message)
+            })
+        this.#preloadLeftCount --
+        if (this.#preloadLeftCount === 0) {
+            setTimeout(() => {
+                this.setup(this.setupParams)
+                this.loop(this.loopParams)
+            }, 0)
+        }
+        return res
+    }
+
+    async loadImage(path: string) {
+        return new Promise(async r => {
+            const img = new Image()
+            img.src = await this.loadMedia(path)
+            img.onload = () => {
+                r(img)
+            }
+        })
     }
 
     sleep(time: number) {
         return new Promise(r => {
             setTimeout(() => {
                 r()
-            }, time);
+            }, time)
         })
     }
 }

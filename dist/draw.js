@@ -190,7 +190,7 @@ class Draw extends _input__WEBPACK_IMPORTED_MODULE_0__["Input"] {
             return;
         }
         this.frame++;
-        const mousePos = new _vector__WEBPACK_IMPORTED_MODULE_1__["Vector"](this.mouseX, this.mouseY);
+        const mousePos = new _vector__WEBPACK_IMPORTED_MODULE_1__["Vec3"](this.mouseX, this.mouseY);
         this.pushMousePosHistory(mousePos);
         if (cb)
             cb(__classPrivateFieldGet(this, _ctx));
@@ -220,17 +220,44 @@ class Draw extends _input__WEBPACK_IMPORTED_MODULE_0__["Input"] {
     clear() {
         __classPrivateFieldGet(this, _ctx).clearRect(0, 0, this.width, this.height);
     }
+    background(color) {
+        if (color)
+            __classPrivateFieldGet(this, _ctx).fillStyle = color;
+        __classPrivateFieldGet(this, _ctx).fillRect(0, 0, this.width, this.height);
+    }
     async loadMedia(path) {
         __classPrivateFieldSet(this, _preloadLeftCount, +__classPrivateFieldGet(this, _preloadLeftCount) + 1);
-        const res = await this.sleep(2000);
+        const res = await fetch(path, { mode: 'cors' })
+            .then(res => {
+            if (res.ok) {
+                return res.blob();
+            }
+            throw new Error('Network response was not ok.');
+        })
+            .then(myBlob => {
+            var objectURL = URL.createObjectURL(myBlob);
+            return objectURL;
+        })
+            .catch(err => {
+            throw new Error('There has been a problem with your fetch operation: ' + err.message);
+        });
         __classPrivateFieldSet(this, _preloadLeftCount, +__classPrivateFieldGet(this, _preloadLeftCount) - 1);
         if (__classPrivateFieldGet(this, _preloadLeftCount) === 0) {
-            this.setup(this.setupParams);
-            this.loop(this.loopParams);
+            setTimeout(() => {
+                this.setup(this.setupParams);
+                this.loop(this.loopParams);
+            }, 0);
         }
+        return res;
     }
-    loadImage(path) {
-        return this.loadMedia(path);
+    async loadImage(path) {
+        return new Promise(async (r) => {
+            const img = new Image();
+            img.src = await this.loadMedia(path);
+            img.onload = () => {
+                r(img);
+            };
+        });
     }
     sleep(time) {
         return new Promise(r => {
@@ -263,7 +290,7 @@ __webpack_require__.r(__webpack_exports__);
 window.Draw = _canvas__WEBPACK_IMPORTED_MODULE_0__["Draw"];
 window.Num = _num__WEBPACK_IMPORTED_MODULE_1__["Num"];
 window.Geom = _num__WEBPACK_IMPORTED_MODULE_1__["Geom"];
-window.Vector = _vector__WEBPACK_IMPORTED_MODULE_2__["Vector"];
+window.Vec3 = _vector__WEBPACK_IMPORTED_MODULE_2__["Vec3"];
 
 
 /***/ }),
@@ -297,7 +324,7 @@ var _canvas, _mousePos, _mouseHistoryCount;
 class Input {
     constructor() {
         _canvas.set(this, void 0);
-        _mousePos.set(this, new _vector__WEBPACK_IMPORTED_MODULE_0__["Vector"]());
+        _mousePos.set(this, new _vector__WEBPACK_IMPORTED_MODULE_0__["Vec3"]());
         _mouseHistoryCount.set(this, 10);
         this.frame = 0;
         this.frameLock = 0;
@@ -443,18 +470,12 @@ class Geom {
 /*!***********************!*\
   !*** ./src/vector.ts ***!
   \***********************/
-/*! exports provided: Vector */
+/*! exports provided: Vec3 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Vector", function() { return Vector; });
-var __classPrivateFieldGet = (undefined && undefined.__classPrivateFieldGet) || function (receiver, privateMap) {
-    if (!privateMap.has(receiver)) {
-        throw new TypeError("attempted to get private field on non-instance");
-    }
-    return privateMap.get(receiver);
-};
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Vec3", function() { return Vec3; });
 var __classPrivateFieldSet = (undefined && undefined.__classPrivateFieldSet) || function (receiver, privateMap, value) {
     if (!privateMap.has(receiver)) {
         throw new TypeError("attempted to set private field on non-instance");
@@ -462,42 +483,42 @@ var __classPrivateFieldSet = (undefined && undefined.__classPrivateFieldSet) || 
     privateMap.set(receiver, value);
     return value;
 };
-var _x, _y, _z;
-class VectorStatic {
-    static add(vectA, vectB) {
-        return new Vector(vectA.x + vectB.x, vectA.y + vectB.y, vectA.z + vectB.z);
+var __classPrivateFieldGet = (undefined && undefined.__classPrivateFieldGet) || function (receiver, privateMap) {
+    if (!privateMap.has(receiver)) {
+        throw new TypeError("attempted to get private field on non-instance");
     }
-}
-class Vector extends VectorStatic {
+    return privateMap.get(receiver);
+};
+var _vect;
+const EPSILON = 0.00001;
+class Vec3 {
     constructor(x, y, z) {
-        super();
-        _x.set(this, 0);
-        _y.set(this, 0);
-        _z.set(this, 0);
-        this.x = x || 0;
-        this.y = y || 0;
-        this.z = z || 0;
+        _vect.set(this, void 0);
+        __classPrivateFieldSet(this, _vect, new Float32Array([x || 0, y || 0, z || 0]));
+    }
+    static diff(end, start) {
+        return new Vec3(end.x - start.x, end.y - start.y, end.y - start.y);
     }
     get x() {
-        return __classPrivateFieldGet(this, _x);
+        return __classPrivateFieldGet(this, _vect)[0];
     }
     set x(x) {
         if (typeof x === 'number')
-            __classPrivateFieldSet(this, _x, x);
+            __classPrivateFieldGet(this, _vect)[0] = x;
     }
     get y() {
-        return __classPrivateFieldGet(this, _y);
+        return __classPrivateFieldGet(this, _vect)[1];
     }
     set y(y) {
         if (typeof y === 'number')
-            __classPrivateFieldSet(this, _y, y);
+            __classPrivateFieldGet(this, _vect)[1] = y;
     }
     get z() {
-        return __classPrivateFieldGet(this, _z);
+        return __classPrivateFieldGet(this, _vect)[2];
     }
     set z(z) {
         if (typeof z === 'number')
-            __classPrivateFieldSet(this, _z, z);
+            __classPrivateFieldGet(this, _vect)[2] = z;
     }
     set(x, y, z) {
         this.x = typeof x === 'number' ? x : this.x;
@@ -505,11 +526,17 @@ class Vector extends VectorStatic {
         this.z = typeof z === 'number' ? z : this.z;
         return this;
     }
+    reset() {
+        this.x = 0;
+        this.y = 0;
+        this.z = 0;
+        return this;
+    }
     copy() {
-        return new Vector(this.x, this.y, this.z);
+        return new Vec3(this.x, this.y, this.z);
     }
     add(x, y, z) {
-        if (x instanceof Vector) {
+        if (x instanceof Vec3) {
             this.x += x.x || 0;
             this.y += x.y || 0;
             this.z += x.z || 0;
@@ -521,7 +548,7 @@ class Vector extends VectorStatic {
         return this;
     }
     sub(x, y, z) {
-        if (x instanceof Vector) {
+        if (x instanceof Vec3) {
             this.x -= x.x || 0;
             this.y -= x.y || 0;
             this.z -= x.z || 0;
@@ -557,7 +584,7 @@ class Vector extends VectorStatic {
         return this;
     }
     dist(x, y, z) {
-        if (x instanceof Vector) {
+        if (x instanceof Vec3) {
             return Math.sqrt(Math.pow(x.x - this.x, 2) +
                 Math.pow(x.y - this.y, 2) +
                 Math.pow(x.z - this.z, 2));
@@ -566,15 +593,60 @@ class Vector extends VectorStatic {
             Math.pow(y - this.y, 2) +
             Math.pow(z - this.z, 2));
     }
-    mag() {
-        return Math.sqrt(Math.pow(this.x, 2) +
+    get length() {
+        return Math.sqrt(this.squaredLength);
+    }
+    get squaredLength() {
+        return (Math.pow(this.x, 2) +
             Math.pow(this.y, 2) +
             Math.pow(this.z, 2));
     }
-    magSq() {
+    equals(vec) {
+        if (Math.abs(this.x - vec.x) > EPSILON) {
+            return false;
+        }
+        else if (Math.abs(this.y - vec.y) > EPSILON) {
+            return false;
+        }
+        else if (Math.abs(this.z - vec.z) > EPSILON) {
+            return false;
+        }
+        return true;
+    }
+    normalize() {
+        const len = this.length;
+        if (len <= EPSILON) {
+            this.x = 0;
+            this.y = 0;
+            this.z = 0;
+            return 0;
+        }
+        else if (len - 1 <= EPSILON) {
+            return 1.0;
+        }
+        this.x /= len;
+        this.y /= len;
+        this.z /= len;
+        return len;
+    }
+    negative() {
+        this.x = -this.x;
+        this.y = -this.y;
+        this.z = -this.z;
+        return this;
+    }
+    scale(scalar) {
+        this.x *= scalar;
+        this.y *= scalar;
+        this.z *= scalar;
+        return this;
     }
 }
-_x = new WeakMap(), _y = new WeakMap(), _z = new WeakMap();
+_vect = new WeakMap();
+Vec3.up = new Vec3(0, 1);
+Vec3.down = new Vec3(0, -1);
+Vec3.left = new Vec3(-1, 0);
+Vec3.right = new Vec3(1, 0);
 
 
 /***/ })

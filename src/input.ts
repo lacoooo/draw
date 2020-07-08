@@ -1,9 +1,9 @@
-import { Vector } from './vector'
+import { Vec3 } from './vector'
 
 export class Input {
 
     #canvas!: HTMLCanvasElement
-    #mousePos = new Vector()
+    #mousePos = new Vec3()
 
     #mouseHistoryCount = 10
     public frame = 0
@@ -44,7 +44,7 @@ export class Input {
         return this.mouseY
     }
 
-    public mousePosHistory: Vector[] = []
+    public mousePosHistory: Vec3[] = []
 
     public mouseDown = false
 
@@ -62,7 +62,7 @@ export class Input {
         this.#mouseHistoryCount = count
     }
 
-    protected pushMousePosHistory(currentMousePos: Vector): void {
+    protected pushMousePosHistory(currentMousePos: Vec3): void {
         this.mousePosHistory.unshift(currentMousePos)
         if (this.mousePosHistory.length > this.#mouseHistoryCount) {
             this.mousePosHistory.pop()

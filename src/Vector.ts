@@ -1,57 +1,62 @@
-class VectorStatic {
-    static add(vectA: Vector, vectB: Vector) {
-        return new Vector(
-            vectA.x + vectB.x,
-            vectA.y + vectB.y,
-            vectA.z + vectB.z
-        )
-    }
-}
+const EPSILON = 0.00001
 
-export class Vector extends VectorStatic {
-    #x = 0
-    #y = 0
-    #z = 0
+export class Vec3 {
+
+    static up = new Vec3(0, 1)
+    static down = new Vec3(0, -1)
+    static left = new Vec3(-1, 0)
+    static right = new Vec3(1, 0)
+
+    // 公开静态方法：差
+    public static diff(end: Vec3, start: Vec3): Vec3 {
+        return new Vec3(end.x - start.x, end.y - start.y, end.y - start.y)
+    }
+
+    #vect: Float32Array
 
     get x() {
-        return this.#x
+        return this.#vect[0]
     }
     set x(x: number) {
-        if (typeof x === 'number') this.#x = x
+        if (typeof x === 'number') this.#vect[0] = x
     }
     get y() {
-        return this.#y
+        return this.#vect[1]
     }
     set y(y: number) {
-        if (typeof y === 'number') this.#y = y
+        if (typeof y === 'number') this.#vect[1] = y
     }
     get z() {
-        return this.#z
+        return this.#vect[2]
     }
     set z(z: number) {
-        if (typeof z === 'number') this.#z = z
+        if (typeof z === 'number') this.#vect[2] = z
     }
 
     constructor(x?: number, y?: number, z?: number) {
-        super()
-        this.x = x || 0
-        this.y = y || 0
-        this.z = z || 0
+        this.#vect = new Float32Array([x || 0, y || 0, z || 0])
     }
 
-    set(x?: number, y?: number, z?: number): this {
+    public set(x?: number, y?: number, z?: number): this {
         this.x = typeof x === 'number' ? x : this.x
         this.y = typeof y === 'number' ? y : this.y
         this.z = typeof z === 'number' ? z : this.z
         return this
     }
 
-    copy(): Vector {
-        return new Vector(this.x, this.y, this.z)
+    public reset() {
+        this.x = 0
+        this.y = 0
+        this.z = 0
+        return this
     }
 
-    add(x?: number | Vector, y?: number, z?: number): this {
-        if (x instanceof Vector) {
+    public copy(): Vec3 {
+        return new Vec3(this.x, this.y, this.z)
+    }
+
+    public add(x?: number | Vec3, y?: number, z?: number): this {
+        if (x instanceof Vec3) {
             this.x += x.x || 0
             this.y += x.y || 0
             this.z += x.z || 0
@@ -63,8 +68,8 @@ export class Vector extends VectorStatic {
         return this
     }
 
-    sub(x?: number | Vector, y?: number, z?: number): this {
-        if (x instanceof Vector) {
+    public sub(x?: number | Vec3, y?: number, z?: number): this {
+        if (x instanceof Vec3) {
             this.x -= x.x || 0
             this.y -= x.y || 0
             this.z -= x.z || 0
@@ -76,9 +81,9 @@ export class Vector extends VectorStatic {
         return this
     }
 
-    mult(n: number): this {
+    public mult(n: number): this {
         if (!(typeof n === 'number' && isFinite(n))) {
-            console.warn( 'n is undefined or not a finite number' )
+            console.warn('n is undefined or not a finite number')
             return this
         }
         this.x *= n
@@ -87,9 +92,9 @@ export class Vector extends VectorStatic {
         return this
     }
 
-    div(n: number): this {
+    public div(n: number): this {
         if (!(typeof n === 'number' && isFinite(n))) {
-            console.warn( 'n is undefined or not a finite number' )
+            console.warn('n is undefined or not a finite number')
             return this
         }
         if (n === 0) {
@@ -102,8 +107,8 @@ export class Vector extends VectorStatic {
         return this
     }
 
-    dist(x: number | Vector, y: number, z: number): number {
-        if (x instanceof Vector) {
+    public dist(x: number | Vec3, y: number, z: number): number {
+        if (x instanceof Vec3) {
             return Math.sqrt(
                 Math.pow(x.x - this.x, 2) +
                 Math.pow(x.y - this.y, 2) +
@@ -117,15 +122,59 @@ export class Vector extends VectorStatic {
         )
     }
 
-    mag() {
-        return Math.sqrt(
+    get length(): number {
+        return Math.sqrt(this.squaredLength)
+    }
+
+    get squaredLength(): number {
+        return (
             Math.pow(this.x, 2) +
             Math.pow(this.y, 2) +
             Math.pow(this.z, 2)
         )
     }
 
-    magSq() {
-        
+    public equals(vec: Vec3): boolean {
+        if (Math.abs(this.x - vec.x) > EPSILON) {
+            return false
+        }
+        else if (Math.abs(this.y - vec.y) > EPSILON) {
+            return false
+        }
+        else if (Math.abs(this.z - vec.z) > EPSILON) {
+            return false
+        }
+        return true
+    }
+
+    public normalize(): number {
+        const len = this.length
+        if (len <= EPSILON) {
+            this.x = 0
+            this.y = 0
+            this.z = 0
+            return 0
+        }
+        else if (len - 1 <= EPSILON) {
+            return 1.0
+        }
+        this.x /= len
+        this.y /= len
+        this.z /= len
+        return len
+    }
+
+    public negative(): this {
+        this.x = -this.x
+        this.y = -this.y
+        this.z = -this.z
+        return this
+    }
+
+    public scale(scalar: number): this {
+        this.x *= scalar
+        this.y *= scalar
+        this.z *= scalar
+        return this
     }
 }
