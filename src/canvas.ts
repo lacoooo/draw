@@ -1,6 +1,6 @@
-import { Idraw, Isetup } from './types'
-import { Input } from './input'
-import { Vec3 } from './vector'
+import { Idraw, Isetup } from './Types'
+import { Input } from './Input'
+import { Vec3 } from './Vector'
 
 export class Draw extends Input implements Idraw {
 
@@ -136,6 +136,10 @@ export class Draw extends Input implements Idraw {
         this.#ctx.lineTo(x2, y2)
         this.closePath()
         this.stroke()
+    }
+
+    public fontSize(size: number) {
+        this.#ctx.font = `${size}px sans-serif`
     }
 
     public clear() {

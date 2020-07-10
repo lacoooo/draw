@@ -1,4 +1,4 @@
-import { Vec3 } from './vector'
+import { Vec3 } from './Vector'
 
 export class Input {
 
@@ -8,6 +8,10 @@ export class Input {
     #mouseHistoryCount = 10
     public frame = 0
     public frameLock = 0
+
+    get mousePos() {
+        return this.#mousePos
+    }
 
     get mouseX() {
         return this.#mousePos.x

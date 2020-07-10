@@ -6,8 +6,8 @@ export class Vec3 {
     static down = new Vec3(0, -1)
     static left = new Vec3(-1, 0)
     static right = new Vec3(1, 0)
-
-    public static diff(end: Vec3, start: Vec3): Vec3 {
+    
+    public static sub(end: Vec3, start: Vec3): Vec3 {
         return new Vec3(end.x - start.x, end.y - start.y, end.y - start.y)
     }
 
@@ -15,13 +15,15 @@ export class Vec3 {
         return vecA.x * vecB.x + vecA.y * vecB.y + vecA.z * vecB.z
     }
 
-    public static getAngle (vecA: Vec3, vecB: Vec3, isRadian: boolean = false): number {
-        let dot: number = Vec3.dot( vecA, vecB )
-        let radian: number = Math.acos( dot / ( vecA.length * vecB.length ) ) ;
-        // if ( isRadian === false ) {
-        //   radian = Math2D.toDegree( radian )
-        // }
-        return radian
+    public static toDegree(radian: number): number {
+        return 180 * radian / Math.PI
+    }
+
+    public static getAngle(vecA: Vec3, vecB: Vec3): number {
+        const dot: number = Vec3.dot( vecA, vecB )
+        const radian: number = Math.acos( dot / ( vecA.length * vecB.length ) )
+        const angle: number = Vec3.toDegree(radian)
+        return angle
     }
 
     #vect: Float32Array

@@ -1,6 +1,6 @@
-import { Num, Geom } from './num'
-import { Draw } from './canvas'
-import { Vec3 } from './vector'
+import { Num, Geom } from './Num'
+import { Draw } from './Canvas'
+import { Vec3 } from './Vector'
 
 declare global {
     interface Window {

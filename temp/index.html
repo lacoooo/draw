@@ -22,48 +22,47 @@
     <script src="../dist/draw.js"></script>
     <script>
         const d = new Draw({
-            width: 1000,
+            width: 1500,
             height: 800
         })
 
-        let img
-
-        const imgPos = new Vec3()
+        const center = new Vec3(d.width / 2, d.height / 2)
 
         d.preload(
             async () => {
-                img = await d.loadImage('./1.jpg')
             }
         )
 
         d.setup(
             (ctx) => {
                 ctx.lineWidth = 1
-                ctx.strokeStyle = 'rgba(200,0,0,0.1)'
-                d.setMouseHistoryCount(20)
+                ctx.strokeStyle = 'rgba(200,0,0,1)'
+                d.fontSize(30)
             }
         )
         
         d.loop(
             (ctx) => {
                 d.clear()
-                const diff = Vec3.diff(new Vec3(d.mouseX, d.mouseY, 0), imgPos)
-                diff.normalize()
-                console.log(diff.x, diff.y)
-                imgPos.add(diff)
-                ctx.drawImage(img, imgPos.x, imgPos.y)
-                // for(let i = 0; i < d.mousePosHistory.length - 1; i ++) {
-                //     const a = d.mousePosHistory[i]
-                //     const b = d.mousePosHistory[i + 1]
-                //     const dist =
-                //         Math.sqrt(
-                //             Math.pow(Math.abs(b.x - a.x), 2)
-                //             +
-                //             Math.pow(Math.abs(b.y - a.y), 2)
-                //         )
-                //     d.strokeWeight(dist)
-                //     d.line(a.x, a.y, b.x, b.y)
-                // }
+                d.line(center.x, center.y, d.mouseX, d.mouseY)
+                d.line(center.x, center.y, d.mouseX, center.y)
+                const vecA = Vec3.sub(d.mousePos, center)
+                const vecB = Vec3.sub(new Vec3(d.mouseX, center.y), center)
+                ctx.fillText(
+                    `cos     ${Vec3.dot(vecA, vecB) / (vecA.length * vecB.length)}`,
+                    d.mouseX,
+                    d.mouseY
+                )
+                ctx.fillText(
+                    `acos   ${Math.acos(Vec3.dot(vecA, vecB) / (vecA.length * vecB.length))}`,
+                    d.mouseX,
+                    d.mouseY + 40
+                )
+                ctx.fillText(
+                    `angle ${180 * Math.acos(Vec3.dot(vecA, vecB) / (vecA.length * vecB.length)) / Math.PI}`,
+                    d.mouseX,
+                    d.mouseY + 80
+                )
             }
         )
 

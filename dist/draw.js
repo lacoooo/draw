@@ -100,9 +100,9 @@ return /******/ (function(modules) { // webpackBootstrap
 /************************************************************************/
 /******/ ({
 
-/***/ "./src/canvas.ts":
+/***/ "./src/Canvas.ts":
 /*!***********************!*\
-  !*** ./src/canvas.ts ***!
+  !*** ./src/Canvas.ts ***!
   \***********************/
 /*! exports provided: Draw */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
@@ -110,8 +110,8 @@ return /******/ (function(modules) { // webpackBootstrap
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Draw", function() { return Draw; });
-/* harmony import */ var _input__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./input */ "./src/input.ts");
-/* harmony import */ var _vector__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./vector */ "./src/vector.ts");
+/* harmony import */ var _Input__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Input */ "./src/Input.ts");
+/* harmony import */ var _Vector__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Vector */ "./src/Vector.ts");
 var __classPrivateFieldGet = (undefined && undefined.__classPrivateFieldGet) || function (receiver, privateMap) {
     if (!privateMap.has(receiver)) {
         throw new TypeError("attempted to get private field on non-instance");
@@ -128,7 +128,7 @@ var __classPrivateFieldSet = (undefined && undefined.__classPrivateFieldSet) || 
 var _canvas, _ctx, _preloadLeftCount;
 
 
-class Draw extends _input__WEBPACK_IMPORTED_MODULE_0__["Input"] {
+class Draw extends _Input__WEBPACK_IMPORTED_MODULE_0__["Input"] {
     constructor(params) {
         super();
         _canvas.set(this, void 0);
@@ -190,7 +190,7 @@ class Draw extends _input__WEBPACK_IMPORTED_MODULE_0__["Input"] {
             return;
         }
         this.frame++;
-        const mousePos = new _vector__WEBPACK_IMPORTED_MODULE_1__["Vec3"](this.mouseX, this.mouseY);
+        const mousePos = new _Vector__WEBPACK_IMPORTED_MODULE_1__["Vec3"](this.mouseX, this.mouseY);
         this.pushMousePosHistory(mousePos);
         if (cb)
             cb(__classPrivateFieldGet(this, _ctx));
@@ -216,6 +216,9 @@ class Draw extends _input__WEBPACK_IMPORTED_MODULE_0__["Input"] {
         __classPrivateFieldGet(this, _ctx).lineTo(x2, y2);
         this.closePath();
         this.stroke();
+    }
+    fontSize(size) {
+        __classPrivateFieldGet(this, _ctx).font = `${size}px sans-serif`;
     }
     clear() {
         __classPrivateFieldGet(this, _ctx).clearRect(0, 0, this.width, this.height);
@@ -272,32 +275,9 @@ _canvas = new WeakMap(), _ctx = new WeakMap(), _preloadLeftCount = new WeakMap()
 
 /***/ }),
 
-/***/ "./src/index.ts":
+/***/ "./src/Input.ts":
 /*!**********************!*\
-  !*** ./src/index.ts ***!
-  \**********************/
-/*! no exports provided */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _canvas__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./canvas */ "./src/canvas.ts");
-/* harmony import */ var _num__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./num */ "./src/num.ts");
-/* harmony import */ var _vector__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./vector */ "./src/vector.ts");
-
-
-
-window.Draw = _canvas__WEBPACK_IMPORTED_MODULE_0__["Draw"];
-window.Num = _num__WEBPACK_IMPORTED_MODULE_1__["Num"];
-window.Geom = _num__WEBPACK_IMPORTED_MODULE_1__["Geom"];
-window.Vec3 = _vector__WEBPACK_IMPORTED_MODULE_2__["Vec3"];
-
-
-/***/ }),
-
-/***/ "./src/input.ts":
-/*!**********************!*\
-  !*** ./src/input.ts ***!
+  !*** ./src/Input.ts ***!
   \**********************/
 /*! exports provided: Input */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
@@ -305,7 +285,7 @@ window.Vec3 = _vector__WEBPACK_IMPORTED_MODULE_2__["Vec3"];
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Input", function() { return Input; });
-/* harmony import */ var _vector__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./vector */ "./src/vector.ts");
+/* harmony import */ var _Vector__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Vector */ "./src/Vector.ts");
 var __classPrivateFieldGet = (undefined && undefined.__classPrivateFieldGet) || function (receiver, privateMap) {
     if (!privateMap.has(receiver)) {
         throw new TypeError("attempted to get private field on non-instance");
@@ -324,12 +304,15 @@ var _canvas, _mousePos, _mouseHistoryCount;
 class Input {
     constructor() {
         _canvas.set(this, void 0);
-        _mousePos.set(this, new _vector__WEBPACK_IMPORTED_MODULE_0__["Vec3"]());
+        _mousePos.set(this, new _Vector__WEBPACK_IMPORTED_MODULE_0__["Vec3"]());
         _mouseHistoryCount.set(this, 10);
         this.frame = 0;
         this.frameLock = 0;
         this.mousePosHistory = [];
         this.mouseDown = false;
+    }
+    get mousePos() {
+        return __classPrivateFieldGet(this, _mousePos);
     }
     get mouseX() {
         return __classPrivateFieldGet(this, _mousePos).x;
@@ -430,9 +413,9 @@ _canvas = new WeakMap(), _mousePos = new WeakMap(), _mouseHistoryCount = new Wea
 
 /***/ }),
 
-/***/ "./src/num.ts":
+/***/ "./src/Num.ts":
 /*!********************!*\
-  !*** ./src/num.ts ***!
+  !*** ./src/Num.ts ***!
   \********************/
 /*! exports provided: Num, Geom */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
@@ -466,9 +449,9 @@ class Geom {
 
 /***/ }),
 
-/***/ "./src/vector.ts":
+/***/ "./src/Vector.ts":
 /*!***********************!*\
-  !*** ./src/vector.ts ***!
+  !*** ./src/Vector.ts ***!
   \***********************/
 /*! exports provided: Vec3 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
@@ -496,15 +479,15 @@ class Vec3 {
         _vect.set(this, void 0);
         __classPrivateFieldSet(this, _vect, new Float32Array([x || 0, y || 0, z || 0]));
     }
-    static diff(end, start) {
+    static sub(end, start) {
         return new Vec3(end.x - start.x, end.y - start.y, end.y - start.y);
     }
     static dot(vecA, vecB) {
         return vecA.x * vecB.x + vecA.y * vecB.y + vecA.z * vecB.z;
     }
     static getAngle(vecA, vecB, isRadian = false) {
-        let dot = Vec3.dot(vecA, vecB);
-        let radian = Math.acos(dot / (vecA.length * vecB.length));
+        const dot = Vec3.dot(vecA, vecB);
+        const radian = Math.acos(dot / (vecA.length * vecB.length));
         return radian;
     }
     get x() {
@@ -658,6 +641,29 @@ Vec3.up = new Vec3(0, 1);
 Vec3.down = new Vec3(0, -1);
 Vec3.left = new Vec3(-1, 0);
 Vec3.right = new Vec3(1, 0);
+
+
+/***/ }),
+
+/***/ "./src/index.ts":
+/*!**********************!*\
+  !*** ./src/index.ts ***!
+  \**********************/
+/*! no exports provided */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _Canvas__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Canvas */ "./src/Canvas.ts");
+/* harmony import */ var _Num__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Num */ "./src/Num.ts");
+/* harmony import */ var _Vector__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Vector */ "./src/Vector.ts");
+
+
+
+window.Draw = _Canvas__WEBPACK_IMPORTED_MODULE_0__["Draw"];
+window.Num = _Num__WEBPACK_IMPORTED_MODULE_1__["Num"];
+window.Geom = _Num__WEBPACK_IMPORTED_MODULE_1__["Geom"];
+window.Vec3 = _Vector__WEBPACK_IMPORTED_MODULE_2__["Vec3"];
 
 
 /***/ })

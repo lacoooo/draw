@@ -1,6 +1,6 @@
-import { Draw } from './canvas'
-import { Num, Geom } from './num'
-import { Vec3 } from './vector'
+import { Draw } from './Canvas'
+import { Num, Geom } from './Num'
+import { Vec3 } from './Vector'
 
 window.Draw = Draw
 
