@@ -1,2 +1,38 @@
-export declare class Vector {
+export declare class Vec3 {
+    #private;
+    static up: Vec3;
+    static down: Vec3;
+    static left: Vec3;
+    static right: Vec3;
+    static add(vecA: Vec3, vecB: Vec3): Vec3;
+    static sub(vecA: Vec3, vecB: Vec3): Vec3;
+    static mult(): Vec3;
+    static div(): Vec3;
+    static dist(vecA: Vec3, vecB: Vec3): number;
+    static dot(vecA: Vec3, vecB: Vec3): number;
+    static toDegree(radian: number): number;
+    static getAngle(vecA: Vec3, vecB: Vec3): number;
+    get x(): number;
+    set x(x: number);
+    get y(): number;
+    set y(y: number);
+    get z(): number;
+    set z(z: number);
+    constructor(x?: number, y?: number, z?: number);
+    set(x?: number, y?: number, z?: number): this;
+    reset(): this;
+    copy(): Vec3;
+    add(x?: number | Vec3, y?: number, z?: number): this;
+    sub(x?: number | Vec3, y?: number, z?: number): this;
+    mult(n: number): this;
+    div(n: number): this;
+    dist(x: number | Vec3, y: number, z: number): number;
+    get length(): number;
+    get squaredLength(): number;
+    equals(vec: Vec3): boolean;
+    normalize(): number;
+    negative(): this;
+    scale(scalar: number): this;
+    dot(vec: Vec3): number;
+    getAngle(vec: Vec3): number;
 }

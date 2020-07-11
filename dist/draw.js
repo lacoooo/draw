@@ -479,16 +479,41 @@ class Vec3 {
         _vect.set(this, void 0);
         __classPrivateFieldSet(this, _vect, new Float32Array([x || 0, y || 0, z || 0]));
     }
-    static sub(end, start) {
-        return new Vec3(end.x - start.x, end.y - start.y, end.y - start.y);
+    static add(vecA, vecB) {
+        return vecA.copy().add(vecB);
+    }
+    static sub(vecA, vecB) {
+        return vecA.copy().sub(vecB);
+    }
+    static mult(vec, number) {
+        return vec.copy().mult(number);
+    }
+    static div(vec, number) {
+        return vec.copy().div(number);
+    }
+    static dist(vecA, vecB) {
+        return vecA.copy().dist(vecB);
+    }
+    static equals(vecA, vecB) {
+        return vecA.equals(vecB);
+    }
+    static normalize(vec) {
+        return vec.copy().normalize();
+    }
+    static negative(vec) {
+        return vec.copy().negative();
+    }
+    static scale(vec, number) {
+        return vec.copy().scale(number);
     }
     static dot(vecA, vecB) {
-        return vecA.x * vecB.x + vecA.y * vecB.y + vecA.z * vecB.z;
+        return vecA.copy().dot(vecB);
     }
-    static getAngle(vecA, vecB, isRadian = false) {
-        const dot = Vec3.dot(vecA, vecB);
-        const radian = Math.acos(dot / (vecA.length * vecB.length));
-        return radian;
+    static getAngle(vecA, vecB) {
+        return vecA.dot(vecB);
+    }
+    static toDegree(radian) {
+        return 180 * radian / Math.PI;
     }
     get x() {
         return __classPrivateFieldGet(this, _vect)[0];
@@ -511,6 +536,14 @@ class Vec3 {
         if (typeof z === 'number')
             __classPrivateFieldGet(this, _vect)[2] = z;
     }
+    get length() {
+        return Math.sqrt(this.squaredLength);
+    }
+    get squaredLength() {
+        return (Math.pow(this.x, 2) +
+            Math.pow(this.y, 2) +
+            Math.pow(this.z, 2));
+    }
     set(x, y, z) {
         this.x = typeof x === 'number' ? x : this.x;
         this.y = typeof y === 'number' ? y : this.y;
@@ -526,28 +559,28 @@ class Vec3 {
     copy() {
         return new Vec3(this.x, this.y, this.z);
     }
-    add(x, y, z) {
+    add(x, y = 0, z = 0) {
         if (x instanceof Vec3) {
-            this.x += x.x || 0;
-            this.y += x.y || 0;
-            this.z += x.z || 0;
+            this.x += x.x;
+            this.y += x.y;
+            this.z += x.z;
             return this;
         }
-        this.x += x || 0;
-        this.y += y || 0;
-        this.z += z || 0;
+        this.x += x;
+        this.y += y;
+        this.z += z;
         return this;
     }
-    sub(x, y, z) {
+    sub(x, y = 0, z = 0) {
         if (x instanceof Vec3) {
-            this.x -= x.x || 0;
-            this.y -= x.y || 0;
-            this.z -= x.z || 0;
+            this.x -= x.x;
+            this.y -= x.y;
+            this.z -= x.z;
             return this;
         }
-        this.x -= x || 0;
-        this.y -= y || 0;
-        this.z -= z || 0;
+        this.x -= x;
+        this.y -= y;
+        this.z -= z;
         return this;
     }
     mult(n) {
@@ -574,23 +607,13 @@ class Vec3 {
         this.z /= n;
         return this;
     }
-    dist(x, y, z) {
+    dist(x, y = 0, z = 0) {
         if (x instanceof Vec3) {
-            return Math.sqrt(Math.pow(x.x - this.x, 2) +
-                Math.pow(x.y - this.y, 2) +
-                Math.pow(x.z - this.z, 2));
+            return Vec3.dist(this, x);
         }
         return Math.sqrt(Math.pow(x - this.x, 2) +
             Math.pow(y - this.y, 2) +
             Math.pow(z - this.z, 2));
-    }
-    get length() {
-        return Math.sqrt(this.squaredLength);
-    }
-    get squaredLength() {
-        return (Math.pow(this.x, 2) +
-            Math.pow(this.y, 2) +
-            Math.pow(this.z, 2));
     }
     equals(vec) {
         if (Math.abs(this.x - vec.x) > EPSILON) {
@@ -610,15 +633,15 @@ class Vec3 {
             this.x = 0;
             this.y = 0;
             this.z = 0;
-            return 0;
+            return this;
         }
         else if (len - 1 <= EPSILON) {
-            return 1.0;
+            return this;
         }
         this.x /= len;
         this.y /= len;
         this.z /= len;
-        return len;
+        return this;
     }
     negative() {
         this.x = -this.x;
@@ -633,7 +656,13 @@ class Vec3 {
         return this;
     }
     dot(vec) {
-        return Vec3.dot(this, vec);
+        return this.x * vec.x + this.y * vec.y + this.z * vec.z;
+    }
+    getAngle(vec) {
+        const dot = this.dot(vec);
+        const radian = Math.acos(dot / (this.length * vec.length));
+        const angle = Vec3.toDegree(radian);
+        return angle;
     }
 }
 _vect = new WeakMap();

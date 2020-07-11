@@ -19,4 +19,4 @@ export class Num {
 }
 export class Geom {
 }
-//# sourceMappingURL=num.js.map
+//# sourceMappingURL=Num.js.map

@@ -1,17 +1,30 @@
-import { Icanvas, Isetup } from './types';
-export declare class Canvas implements Icanvas {
-    protected _canvas: HTMLCanvasElement;
-    protected _ctx: CanvasRenderingContext2D;
+import { Idraw, Isetup } from './Types';
+import { Input } from './Input';
+export declare class Draw extends Input implements Idraw {
+    #private;
+    setupParams: (ctx: CanvasRenderingContext2D) => void;
+    loopParams: (ctx: CanvasRenderingContext2D) => void;
+    get width(): number;
+    set width(w: number);
+    get height(): number;
+    set height(h: number);
     frame: number;
-    width: number;
-    height: number;
     constructor(params?: Isetup);
+    private canvasElementInit;
+    private canvasSizeInit;
     protected _createElement(elem?: string): HTMLElement;
+    preload(cb: () => void): void;
     setup(cb: (ctx: CanvasRenderingContext2D) => void): void;
     loop(cb: (ctx: CanvasRenderingContext2D) => void): void;
     strokeWeight(width: number): void;
     private stroke;
-    beginPath(): void;
-    closePath(): void;
+    private beginPath;
+    private closePath;
     line(x1: number, y1: number, x2: number, y2: number): void;
+    fontSize(size: number): void;
+    clear(): void;
+    background(color: string): void;
+    loadMedia(path: string): Promise<string>;
+    loadImage(path: string): Promise<unknown>;
+    sleep(time: number): Promise<unknown>;
 }
