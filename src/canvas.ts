@@ -16,6 +16,9 @@ export class Draw extends Input implements Idraw {
     get height() { return this.#canvas.height }
     set height(h: number) { this.#canvas.height = h }
 
+    strokeOpen = false
+    fillOpen = true
+
     public frame = 0
 
     #preloadLeftCount = 0
@@ -60,7 +63,7 @@ export class Draw extends Input implements Idraw {
     }
 
     public preload(cb: () => void) {
-        cb()
+        if (cb) cb()
     }
 
     /**
@@ -104,24 +107,32 @@ export class Draw extends Input implements Idraw {
      * 
      * @param width stroke width
      */
-    public strokeWeight(width: number) {
+    public strokeWeight(width: number): this {
         this.#ctx.lineWidth = width
+        return this
     }
 
-    /**
-     * Trace the path
-     */
-    private stroke() {
-        this.#ctx.stroke()
-    }
-
-    private beginPath() {
+    private beginPath(): this {
         this.#ctx.beginPath()
+        return this
     }
 
-    private closePath() {
+    private closePath(): this {
         this.#ctx.closePath()
+        return this
     }
+
+    public save(): this {
+        this.#ctx.save()
+        return this
+    }
+
+    public restore(): this {
+        this.#ctx.restore()
+        return this
+    }
+
+
 
     /**
      * Draw lines
@@ -130,28 +141,90 @@ export class Draw extends Input implements Idraw {
      * @param x2 X coordinate of the ending point
      * @param y2 Y coordinate of the ending point
      */
-    public line(x1: number, y1: number, x2: number, y2: number) {
+    public line(x1: number, y1: number, x2: number, y2: number): this {
         this.beginPath()
         this.#ctx.moveTo(x1, y1)
         this.#ctx.lineTo(x2, y2)
         this.closePath()
-        this.stroke()
+        this.draw()
+        return this
     }
 
-    public fontSize(size: number) {
+    public rect(x: number, y: number, width: number = 100, height: number = 100): this {
+        this.#ctx.rect(x, y, width, height)
+        this.draw()
+        return this
+    }
+
+    public circle(radius: number, x: number, y: number): this {
+        this.beginPath()
+        this.#ctx.arc(x, y, radius, 0, Math.PI * 2, true)
+        this.closePath()
+        this.draw()
+        return this
+    }
+
+    public translate(x: number, y: number): this {
+        this.#ctx.translate(x, y)
+        return this
+    }
+
+    public rotate(angle: number): this {
+        this.#ctx.rotate(angle)
+        return this
+    }
+
+    public scale(x: number, y: number = x): this {
+        this.#ctx.scale(x, y)
+        return this
+    }
+
+    public textSize(size: number): this {
         this.#ctx.font = `${size}px sans-serif`
+        return this
     }
 
-    public clear() {
+    public text(text: string, x: number, y: number): this {
+        this.#ctx.fillText(text, x, y)
+        return this
+    }
+
+    public fillStyle(color: string): this {
+        this.#ctx.fillStyle = color
+        return this
+    }
+
+    public strokeStyle(color: string): this {
+        this.#ctx.strokeStyle = color
+        return this
+    }
+
+    public lineWidth(width: number): this {
+        this.#ctx.lineWidth = width
+        return this
+    }
+
+    private draw(): void {
+        if (this.fillOpen === true) {
+            this.#ctx.fill()
+        }
+        if (this.strokeOpen === true) {
+            this.#ctx.stroke()
+        }
+    }
+
+    public clear(): this {
         this.#ctx.clearRect(0, 0, this.width, this.height)
+        return this
     }
 
-    public background(color: string) {
+    public background(color: string): this {
         if (color) this.#ctx.fillStyle = color
         this.#ctx.fillRect(0, 0, this.width, this.height)
+        return this
     }
 
-    async loadMedia(path: string) {
+    private async loadMedia(path: string): Promise<string> {
         this.#preloadLeftCount ++
 
         const res = await fetch(path, { mode: 'cors' })
@@ -178,21 +251,16 @@ export class Draw extends Input implements Idraw {
         return res
     }
 
-    async loadImage(path: string) {
+    public async loadImage(path: string): Promise<HTMLImageElement> {
         return new Promise(async r => {
-            const img = new Image()
+            const img: HTMLImageElement = new Image()
             img.src = await this.loadMedia(path)
             img.onload = () => {
                 r(img)
             }
-        })
-    }
-
-    sleep(time: number) {
-        return new Promise(r => {
-            setTimeout(() => {
-                r()
-            }, time)
+            img.onerror = err => {
+                throw new Error('Image onload error: ' + err)
+            }
         })
     }
 }

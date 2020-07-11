@@ -22,7 +22,7 @@
     <script src="../dist/draw.js"></script>
     <script>
         const d = new Draw({
-            width: 1500,
+            width: window.width,
             height: 800
         })
 
@@ -36,33 +36,32 @@
         d.setup(
             (ctx) => {
                 ctx.lineWidth = 1
-                ctx.strokeStyle = 'rgba(200,0,0,1)'
-                d.fontSize(30)
+                d.strokeStyle('rgba(200,0,0,1)')
+                d.fillStyle('rgba(255,255,255,1)')
+                d.textSize(20)
+                d.strokeOpen = true
+                d.fillOpen = true
             }
         )
         
         d.loop(
             (ctx) => {
                 d.clear()
+                
+                const vecA = Vec3.diff(d.mousePos, center)
+                const vecB = Vec3.diff(new Vec3(center.x + 100, center.y), center)
+
                 d.line(center.x, center.y, d.mouseX, d.mouseY)
-                d.line(center.x, center.y, d.mouseX, center.y)
-                const vecA = Vec3.sub(d.mousePos, center)
-                const vecB = Vec3.sub(new Vec3(d.mouseX, center.y), center)
-                ctx.fillText(
-                    `cos     ${Vec3.dot(vecA, vecB) / (vecA.length * vecB.length)}`,
-                    d.mouseX,
-                    d.mouseY
-                )
-                ctx.fillText(
-                    `acos   ${Math.acos(Vec3.dot(vecA, vecB) / (vecA.length * vecB.length))}`,
-                    d.mouseX,
-                    d.mouseY + 40
-                )
-                ctx.fillText(
-                    `angle ${180 * Math.acos(Vec3.dot(vecA, vecB) / (vecA.length * vecB.length)) / Math.PI}`,
-                    d.mouseX,
-                    d.mouseY + 80
-                )
+                d.line(center.x, center.y, center.x + 100, center.y)
+
+                const radian = Vec3.getOrientationRadian(d.mousePos, center)
+                d.save()
+                d.translate(center.x, center.y)
+                d.rotate(radian )
+                d.rect(0, 0, 200, 100)
+                d.restore()
+
+                d.circle(30, center.x, center.y)
             }
         )
 

@@ -133,6 +133,8 @@ class Draw extends _Input__WEBPACK_IMPORTED_MODULE_0__["Input"] {
         super();
         _canvas.set(this, void 0);
         _ctx.set(this, void 0);
+        this.strokeOpen = false;
+        this.fillOpen = true;
         this.frame = 0;
         _preloadLeftCount.set(this, 0);
         this.canvasElementInit(params);
@@ -168,7 +170,8 @@ class Draw extends _Input__WEBPACK_IMPORTED_MODULE_0__["Input"] {
         return d;
     }
     preload(cb) {
-        cb();
+        if (cb)
+            cb();
     }
     setup(cb) {
         if (!this.setupParams) {
@@ -200,33 +203,93 @@ class Draw extends _Input__WEBPACK_IMPORTED_MODULE_0__["Input"] {
     }
     strokeWeight(width) {
         __classPrivateFieldGet(this, _ctx).lineWidth = width;
-    }
-    stroke() {
-        __classPrivateFieldGet(this, _ctx).stroke();
+        return this;
     }
     beginPath() {
         __classPrivateFieldGet(this, _ctx).beginPath();
+        return this;
     }
     closePath() {
         __classPrivateFieldGet(this, _ctx).closePath();
+        return this;
+    }
+    save() {
+        __classPrivateFieldGet(this, _ctx).save();
+        return this;
+    }
+    restore() {
+        __classPrivateFieldGet(this, _ctx).restore();
+        return this;
     }
     line(x1, y1, x2, y2) {
         this.beginPath();
         __classPrivateFieldGet(this, _ctx).moveTo(x1, y1);
         __classPrivateFieldGet(this, _ctx).lineTo(x2, y2);
         this.closePath();
-        this.stroke();
+        this.draw();
+        return this;
     }
-    fontSize(size) {
+    rect(x, y, width = 100, height = 100) {
+        __classPrivateFieldGet(this, _ctx).rect(x, y, width, height);
+        this.draw();
+        return this;
+    }
+    circle(radius, x, y) {
+        this.beginPath();
+        __classPrivateFieldGet(this, _ctx).arc(x, y, radius, 0, Math.PI * 2, true);
+        this.closePath();
+        this.draw();
+        return this;
+    }
+    translate(x, y) {
+        __classPrivateFieldGet(this, _ctx).translate(x, y);
+        return this;
+    }
+    rotate(angle) {
+        __classPrivateFieldGet(this, _ctx).rotate(angle);
+        return this;
+    }
+    scale(x, y = x) {
+        __classPrivateFieldGet(this, _ctx).scale(x, y);
+        return this;
+    }
+    textSize(size) {
         __classPrivateFieldGet(this, _ctx).font = `${size}px sans-serif`;
+        return this;
+    }
+    text(text, x, y) {
+        __classPrivateFieldGet(this, _ctx).fillText(text, x, y);
+        return this;
+    }
+    fillStyle(color) {
+        __classPrivateFieldGet(this, _ctx).fillStyle = color;
+        return this;
+    }
+    strokeStyle(color) {
+        __classPrivateFieldGet(this, _ctx).strokeStyle = color;
+        return this;
+    }
+    lineWidth(width) {
+        __classPrivateFieldGet(this, _ctx).lineWidth = width;
+        return this;
+    }
+    draw() {
+        if (this.fillOpen === true) {
+            __classPrivateFieldGet(this, _ctx).fill();
+        }
+        if (this.strokeOpen === true) {
+            __classPrivateFieldGet(this, _ctx).stroke();
+        }
     }
     clear() {
         __classPrivateFieldGet(this, _ctx).clearRect(0, 0, this.width, this.height);
+        return this;
     }
     background(color) {
         if (color)
             __classPrivateFieldGet(this, _ctx).fillStyle = color;
         __classPrivateFieldGet(this, _ctx).fillRect(0, 0, this.width, this.height);
+        return this;
     }
     async loadMedia(path) {
         __classPrivateFieldSet(this, _preloadLeftCount, +__classPrivateFieldGet(this, _preloadLeftCount) + 1);
@@ -260,13 +323,9 @@ class Draw extends _Input__WEBPACK_IMPORTED_MODULE_0__["Input"] {
             img.onload = () => {
                 r(img);
             };
-        });
-    }
-    sleep(time) {
-        return new Promise(r => {
-            setTimeout(() => {
-                r();
-            }, time);
+            img.onerror = err => {
+                throw new Error('Image onload error: ' + err);
+            };
         });
     }
 }
@@ -480,40 +539,55 @@ class Vec3 {
         __classPrivateFieldSet(this, _vect, new Float32Array([x || 0, y || 0, z || 0]));
     }
     static add(vecA, vecB) {
-        return vecA.copy().add(vecB);
+        return vecA.clone().add(vecB);
     }
-    static sub(vecA, vecB) {
-        return vecA.copy().sub(vecB);
+    static diff(vecA, vecB) {
+        return vecA.clone().sub(vecB);
     }
     static mult(vec, number) {
-        return vec.copy().mult(number);
+        return vec.clone().mult(number);
     }
     static div(vec, number) {
-        return vec.copy().div(number);
+        return vec.clone().div(number);
     }
     static dist(vecA, vecB) {
-        return vecA.copy().dist(vecB);
+        return vecA.clone().dist(vecB);
     }
     static equals(vecA, vecB) {
         return vecA.equals(vecB);
     }
     static normalize(vec) {
-        return vec.copy().normalize();
+        return vec.clone().normalize();
     }
     static negative(vec) {
-        return vec.copy().negative();
+        return vec.clone().negative();
     }
     static scale(vec, number) {
-        return vec.copy().scale(number);
+        return vec.clone().scale(number);
     }
     static dot(vecA, vecB) {
-        return vecA.copy().dot(vecB);
+        return vecA.clone().dot(vecB);
     }
-    static getAngle(vecA, vecB) {
-        return vecA.dot(vecB);
+    static getAngle(vecA, vecB = Vec3.right) {
+        return vecA.getAngle(vecB);
     }
-    static toDegree(radian) {
-        return 180 * radian / Math.PI;
+    static getRadian(vecA, vecB = Vec3.right) {
+        return vecA.getRadian(vecB);
+    }
+    static radian2Degree(radian) {
+        return radian * 180 / Math.PI;
+    }
+    static getOrientationRadian(to, from = new Vec3()) {
+        return to.getOrientationRadian(from);
+    }
+    static getOrientationAngle(to, from = new Vec3()) {
+        return to.getOrientationAngle(from);
+    }
+    static degree2Radian(degree) {
+        return degree * Math.PI / 180;
+    }
+    static getRandomVec(width = 100, height = width, deep = width) {
+        return new Vec3(Math.random() * width, Math.random() * height, Math.random() * deep);
     }
     get x() {
         return __classPrivateFieldGet(this, _vect)[0];
@@ -556,7 +630,7 @@ class Vec3 {
         this.z = 0;
         return this;
     }
-    copy() {
+    clone() {
         return new Vec3(this.x, this.y, this.z);
     }
     add(x, y = 0, z = 0) {
@@ -658,11 +732,26 @@ class Vec3 {
     dot(vec) {
         return this.x * vec.x + this.y * vec.y + this.z * vec.z;
     }
-    getAngle(vec) {
+    getAngle(vec = Vec3.right) {
         const dot = this.dot(vec);
         const radian = Math.acos(dot / (this.length * vec.length));
-        const angle = Vec3.toDegree(radian);
+        const angle = Vec3.radian2Degree(radian);
         return angle;
+    }
+    getRadian(vec = Vec3.right) {
+        const dot = this.dot(vec);
+        const radian = Math.acos(dot / (this.length * vec.length));
+        return radian;
+    }
+    getOrientationRadian(from = new Vec3()) {
+        const diff = this.clone().sub(from);
+        const radian = Math.atan2(diff.y, diff.x);
+        return radian;
+    }
+    getOrientationAngle(from = new Vec3()) {
+        const diff = this.clone().sub(from);
+        const radian = Math.atan2(diff.y, diff.x);
+        return Vec3.radian2Degree(radian);
     }
 }
 _vect = new WeakMap();

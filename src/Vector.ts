@@ -8,23 +8,23 @@ export class Vec3 {
     public static right = new Vec3(1, 0)
 
     public static add(vecA: Vec3, vecB: Vec3): Vec3 {
-        return vecA.copy().add(vecB)
+        return vecA.clone().add(vecB)
     }
 
-    public static sub(vecA: Vec3, vecB: Vec3): Vec3 {
-        return vecA.copy().sub(vecB)
+    public static diff(vecA: Vec3, vecB: Vec3): Vec3 {
+        return vecA.clone().sub(vecB)
     }
 
     public static mult(vec: Vec3, number: number): Vec3 {
-        return vec.copy().mult(number)
+        return vec.clone().mult(number)
     }
 
     public static div(vec: Vec3, number: number): Vec3 {
-        return vec.copy().div(number)
+        return vec.clone().div(number)
     }
 
     public static dist(vecA: Vec3, vecB: Vec3): number {
-        return vecA.copy().dist(vecB)
+        return vecA.clone().dist(vecB)
     }
 
     public static equals(vecA: Vec3, vecB: Vec3): boolean {
@@ -32,27 +32,52 @@ export class Vec3 {
     }
 
     public static normalize(vec: Vec3): Vec3 {
-        return vec.copy().normalize()
+        return vec.clone().normalize()
     }
 
     public static negative(vec: Vec3): Vec3 {
-        return vec.copy().negative()
+        return vec.clone().negative()
     }
 
     public static scale(vec: Vec3, number: number): Vec3 {
-        return vec.copy().scale(number)
+        return vec.clone().scale(number)
     }
 
     public static dot(vecA: Vec3, vecB: Vec3): number {
-        return vecA.copy().dot(vecB)
+        return vecA.clone().dot(vecB)
     }
 
-    public static getAngle(vecA: Vec3, vecB: Vec3): number {
-        return vecA.dot(vecB)
+    /**
+     * Get the angle between two vectors
+     * @param vecA 
+     * @param vecB 
+     */
+    public static getAngle(vecA: Vec3, vecB: Vec3 = Vec3.right): number {
+        return vecA.getAngle(vecB)
+    }
+
+    public static getRadian(vecA: Vec3, vecB: Vec3 = Vec3.right): number {
+        return vecA.getRadian(vecB)
     }
     
-    public static toDegree(radian: number): number {
-        return 180 * radian / Math.PI
+    public static radian2Degree(radian: number): number {
+        return radian * 180 / Math.PI
+    }
+
+    public static getOrientationRadian(to: Vec3, from: Vec3 = new Vec3()): number {
+        return to.getOrientationRadian(from)
+    }
+
+    public static getOrientationAngle(to: Vec3, from: Vec3 = new Vec3()): number {
+        return to.getOrientationAngle(from)
+    }
+
+    public static degree2Radian(degree: number): number {
+        return degree * Math.PI / 180
+    }
+
+    public static getRandomVec(width: number = 100, height: number = width, deep: number = width): Vec3 {
+        return new Vec3(Math.random() * width, Math.random() * height, Math.random() * deep)
     }
 
     #vect: Float32Array
@@ -106,7 +131,7 @@ export class Vec3 {
         return this
     }
 
-    public copy(): Vec3 {
+    public clone(): Vec3 {
         return new Vec3(this.x, this.y, this.z)
     }
 
@@ -221,11 +246,29 @@ export class Vec3 {
         return this.x * vec.x + this.y * vec.y + this.z * vec.z
     }
 
-    public getAngle(vec: Vec3): number {
+    public getAngle(vec: Vec3 = Vec3.right): number {
         const dot: number = this.dot(vec)
         const radian: number = Math.acos(dot / (this.length * vec.length))
-        const angle: number = Vec3.toDegree(radian)
+        const angle: number = Vec3.radian2Degree(radian)
         return angle
+    }
+
+    public getRadian(vec: Vec3 = Vec3.right): number {
+        const dot: number = this.dot(vec)
+        const radian: number = Math.acos(dot / (this.length * vec.length))
+        return radian
+    }
+
+    public getOrientationRadian(from: Vec3 = new Vec3()): number {
+        const diff: Vec3 = this.clone().sub(from)
+        const radian: number = Math.atan2(diff.y, diff.x)
+        return radian
+    }
+
+    public getOrientationAngle(from: Vec3 = new Vec3()): number {
+        const diff: Vec3 = this.clone().sub(from)
+        const radian: number = Math.atan2(diff.y, diff.x)
+        return Vec3.radian2Degree(radian)
     }
 
 }
