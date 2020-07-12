@@ -125,7 +125,7 @@ var __classPrivateFieldSet = (undefined && undefined.__classPrivateFieldSet) || 
     privateMap.set(receiver, value);
     return value;
 };
-var _canvas, _ctx, _preloadLeftCount;
+var _canvas, _ctx, _loppOnce, _preloadLeftCount;
 
 
 class Draw extends _Input__WEBPACK_IMPORTED_MODULE_0__["Input"] {
@@ -134,8 +134,9 @@ class Draw extends _Input__WEBPACK_IMPORTED_MODULE_0__["Input"] {
         _canvas.set(this, void 0);
         _ctx.set(this, void 0);
         this.strokeOpen = false;
-        this.fillOpen = true;
+        this.fillOpen = false;
         this.frame = 0;
+        _loppOnce.set(this, false);
         _preloadLeftCount.set(this, 0);
         this.canvasElementInit(params);
         this.canvasSizeInit(params);
@@ -199,7 +200,12 @@ class Draw extends _Input__WEBPACK_IMPORTED_MODULE_0__["Input"] {
             cb(__classPrivateFieldGet(this, _ctx));
         else
             throw Error('without callback');
+        if (__classPrivateFieldGet(this, _loppOnce) === true)
+            return;
         requestAnimationFrame(this.loop.bind(this, cb));
+    }
+    loppOnce() {
+        __classPrivateFieldSet(this, _loppOnce, true);
     }
     strokeWeight(width) {
         __classPrivateFieldGet(this, _ctx).lineWidth = width;
@@ -241,6 +247,15 @@ class Draw extends _Input__WEBPACK_IMPORTED_MODULE_0__["Input"] {
         this.draw();
         return this;
     }
+    point(x, y) {
+        if (__classPrivateFieldGet(this, _ctx).lineWidth > 1) {
+            this.circle(__classPrivateFieldGet(this, _ctx).lineWidth / 2, x, y);
+        }
+        else {
+            this.rect(x, y, 1, 1);
+        }
+        return this;
+    }
     translate(x, y) {
         __classPrivateFieldGet(this, _ctx).translate(x, y);
         return this;
@@ -273,6 +288,20 @@ class Draw extends _Input__WEBPACK_IMPORTED_MODULE_0__["Input"] {
         __classPrivateFieldGet(this, _ctx).lineWidth = width;
         return this;
     }
+    getBezierPoints(p0, p1, p2, p3, number = 100) {
+        let t = 0;
+        const vecs = [];
+        for (let i = 0; i <= number; i++) {
+            t = i / number;
+            const t_pow3 = Math.pow(t, 3);
+            const pos = p0.clone().mult(Math.pow(1 - t, 3))
+                .add(p1.clone().mult(3 * t * Math.pow(1 - t, 2)))
+                .add(p2.clone().mult(3 * (Math.pow(t, 2) - t_pow3)))
+                .add(p3.clone().mult(t_pow3));
+            vecs.push(pos);
+        }
+        return vecs;
+    }
     draw() {
         if (this.fillOpen === true) {
             __classPrivateFieldGet(this, _ctx).fill();
@@ -300,7 +329,7 @@ class Draw extends _Input__WEBPACK_IMPORTED_MODULE_0__["Input"] {
             }
             throw new Error('Network response was not ok.');
         })
-            .then(myBlob => {
+            .then((myBlob) => {
             var objectURL = URL.createObjectURL(myBlob);
             return objectURL;
         })
@@ -329,7 +358,7 @@ class Draw extends _Input__WEBPACK_IMPORTED_MODULE_0__["Input"] {
         });
     }
 }
-_canvas = new WeakMap(), _ctx = new WeakMap(), _preloadLeftCount = new WeakMap();
+_canvas = new WeakMap(), _ctx = new WeakMap(), _loppOnce = new WeakMap(), _preloadLeftCount = new WeakMap();
 
 
 /***/ }),
@@ -566,7 +595,16 @@ class Vec3 {
         return vec.clone().scale(number);
     }
     static dot(vecA, vecB) {
-        return vecA.clone().dot(vecB);
+        return vecA.dot(vecB);
+    }
+    static cross(vecA, vecB) {
+        return vecA.cross(vecB);
+    }
+    static lerp(vecA, vecB, t) {
+        const x = vecA.x * (1 - t) + vecB.x * t;
+        const y = vecA.y * (1 - t) + vecB.y * t;
+        const z = vecA.z * (1 - t) + vecB.z * t;
+        return new Vec3(x, y, z);
     }
     static getAngle(vecA, vecB = Vec3.right) {
         return vecA.getAngle(vecB);
@@ -683,7 +721,9 @@ class Vec3 {
     }
     dist(x, y = 0, z = 0) {
         if (x instanceof Vec3) {
-            return Vec3.dist(this, x);
+            return Math.sqrt(Math.pow(x.x - this.x, 2) +
+                Math.pow(x.y - this.y, 2) +
+                Math.pow(x.z - this.z, 2));
         }
         return Math.sqrt(Math.pow(x - this.x, 2) +
             Math.pow(y - this.y, 2) +
@@ -731,6 +771,12 @@ class Vec3 {
     }
     dot(vec) {
         return this.x * vec.x + this.y * vec.y + this.z * vec.z;
+    }
+    cross(vec) {
+        const x = this.y * vec.z - this.z * vec.y;
+        const y = this.z * vec.x - this.x * vec.z;
+        const z = this.x * vec.y - this.y * vec.x;
+        return new Vec3(x, y, z);
     }
     getAngle(vec = Vec3.right) {
         const dot = this.dot(vec);

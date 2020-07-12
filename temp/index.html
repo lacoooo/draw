@@ -28,6 +28,14 @@
 
         const center = new Vec3(d.width / 2, d.height / 2)
 
+        const bezierPos = [
+            Vec3.getRandomVec(d.width, d.height, 0),
+            Vec3.getRandomVec(d.width, d.height, 0),
+            Vec3.getRandomVec(d.width, d.height, 0),
+            Vec3.getRandomVec(d.width, d.height, 0)
+        ]
+        let points = []
+
         d.preload(
             async () => {
             }
@@ -35,33 +43,39 @@
 
         d.setup(
             (ctx) => {
-                ctx.lineWidth = 1
-                d.strokeStyle('rgba(200,0,0,1)')
-                d.fillStyle('rgba(255,255,255,1)')
-                d.textSize(20)
+                ctx.lineWidth = 0.2
                 d.strokeOpen = true
-                d.fillOpen = true
+                points = d.getBezierPoints(
+                    ...bezierPos, 100
+                )
+                d.loppOnce()
             }
         )
         
         d.loop(
             (ctx) => {
                 d.clear()
-                
-                const vecA = Vec3.diff(d.mousePos, center)
-                const vecB = Vec3.diff(new Vec3(center.x + 100, center.y), center)
+                console.log(1)
 
-                d.line(center.x, center.y, d.mouseX, d.mouseY)
-                d.line(center.x, center.y, center.x + 100, center.y)
+                d.strokeStyle('rgba(200,0,0,0.06)')
 
-                const radian = Vec3.getOrientationRadian(d.mousePos, center)
-                d.save()
-                d.translate(center.x, center.y)
-                d.rotate(radian )
-                d.rect(0, 0, 200, 100)
-                d.restore()
+                const lens = []
 
-                d.circle(30, center.x, center.y)
+                points.reduce((a, b, i) => {
+                    const dist = Vec3.dist(a, b)
+                    for (let i = 0; i < dist; i += 4) {
+                        if (Math.random() > .7) continue
+                        const pos = Vec3.lerp(a, b, i / dist)
+                        d.point(pos.x, pos.y)
+                    }
+                    return b
+                })
+
+                d.strokeStyle('rgba(0,200,0,1)')
+                d.line(bezierPos[0].x, bezierPos[0].y, bezierPos[1].x, bezierPos[1].y)
+                d.line(bezierPos[2].x, bezierPos[2].y, bezierPos[3].x, bezierPos[3].y)
+
+
             }
         )
 

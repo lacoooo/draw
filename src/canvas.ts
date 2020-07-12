@@ -17,9 +17,11 @@ export class Draw extends Input implements Idraw {
     set height(h: number) { this.#canvas.height = h }
 
     strokeOpen = false
-    fillOpen = true
+    fillOpen = false
 
     public frame = 0
+
+    #loppOnce = false
 
     #preloadLeftCount = 0
 
@@ -100,7 +102,14 @@ export class Draw extends Input implements Idraw {
         this.pushMousePosHistory(mousePos)
         if (cb) cb(this.#ctx)
         else throw Error('without callback')
+
+        if (this.#loppOnce === true) return
+
         requestAnimationFrame(this.loop.bind(this, cb))
+    }
+
+    public loppOnce() {
+        this.#loppOnce = true
     }
 
     /**
@@ -164,6 +173,15 @@ export class Draw extends Input implements Idraw {
         return this
     }
 
+    public point(x: number, y: number): this {
+        if (this.#ctx.lineWidth > 1) {
+            this.circle(this.#ctx.lineWidth / 2, x, y)
+        } else {
+            this.rect(x, y, 1, 1)
+        }
+        return this
+    }
+
     public translate(x: number, y: number): this {
         this.#ctx.translate(x, y)
         return this
@@ -204,6 +222,23 @@ export class Draw extends Input implements Idraw {
         return this
     }
 
+    public getBezierPoints(p0: Vec3, p1: Vec3, p2: Vec3, p3: Vec3, number: number = 100): Vec3[] {
+        let t = 0
+        const vecs = []
+        for (let i = 0; i <= number; i++) {
+            t = i / number
+            const t_pow3 = Math.pow(t, 3)
+            const pos =
+                p0.clone().mult(Math.pow(1 - t, 3))
+                    .add(p1.clone().mult(3 * t * Math.pow(1 - t, 2)))
+                    .add(p2.clone().mult(3 * (Math.pow(t, 2) - t_pow3)))
+                    .add(p3.clone().mult(t_pow3))
+            vecs.push(pos)
+        }
+
+        return vecs
+    }
+
     private draw(): void {
         if (this.fillOpen === true) {
             this.#ctx.fill()
@@ -229,13 +264,13 @@ export class Draw extends Input implements Idraw {
 
         const res = await fetch(path, { mode: 'cors' })
             .then(res => {
-                if(res.ok) {
+                if (res.ok) {
                     return res.blob()
                 }
                 throw new Error('Network response was not ok.')
             })
-            .then(myBlob => {
-                var objectURL = URL.createObjectURL(myBlob)
+            .then((myBlob: Blob) => {
+                var objectURL: string = URL.createObjectURL(myBlob)
                 return objectURL
             })
             .catch(err => {
@@ -252,7 +287,7 @@ export class Draw extends Input implements Idraw {
     }
 
     public async loadImage(path: string): Promise<HTMLImageElement> {
-        return new Promise(async r => {
+        return new Promise(async (r: (img: HTMLImageElement) => void) => {
             const img: HTMLImageElement = new Image()
             img.src = await this.loadMedia(path)
             img.onload = () => {

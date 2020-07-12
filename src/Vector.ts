@@ -44,7 +44,18 @@ export class Vec3 {
     }
 
     public static dot(vecA: Vec3, vecB: Vec3): number {
-        return vecA.clone().dot(vecB)
+        return vecA.dot(vecB)
+    }
+
+    public static cross(vecA: Vec3, vecB: Vec3): Vec3 {
+        return vecA.cross(vecB)
+    }
+
+    public static lerp(vecA: Vec3, vecB: Vec3, t: number): Vec3 {
+        const x = vecA.x * (1 - t) + vecB.x * t
+        const y = vecA.y * (1 - t) + vecB.y * t
+        const z = vecA.z * (1 - t) + vecB.z * t
+        return new Vec3(x, y, z)
     }
 
     /**
@@ -189,7 +200,11 @@ export class Vec3 {
 
     public dist(x: number | Vec3, y: number = 0, z: number = 0): number {
         if (x instanceof Vec3) {
-            return Vec3.dist(this, x)
+            return Math.sqrt(
+                Math.pow(x.x - this.x, 2) +
+                Math.pow(x.y - this.y, 2) +
+                Math.pow(x.z - this.z, 2)
+            )
         }
         return Math.sqrt(
             Math.pow(x - this.x, 2) +
@@ -244,6 +259,13 @@ export class Vec3 {
 
     public dot(vec: Vec3): number {
         return this.x * vec.x + this.y * vec.y + this.z * vec.z
+    }
+
+    public cross(vec: Vec3): Vec3 {
+        const x = this.y * vec.z - this.z * vec.y
+        const y = this.z * vec.x - this.x * vec.z
+        const z = this.x * vec.y - this.y * vec.x
+        return new Vec3(x, y, z)
     }
 
     public getAngle(vec: Vec3 = Vec3.right): number {
