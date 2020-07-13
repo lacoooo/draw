@@ -182,8 +182,9 @@ export class Draw extends Input implements Idraw {
         return this
     }
 
-    public image(file: IimgObject, x: number, y: number) {
+    public image(file: IimgObject, x: number, y: number): this {
         this.#ctx.drawImage(file.img, x, y)
+        return this
     }
 
     public translate(x: number, y: number): this {

@@ -258,6 +258,7 @@ class Draw extends _Input__WEBPACK_IMPORTED_MODULE_0__["Input"] {
     }
     image(file, x, y) {
         __classPrivateFieldGet(this, _ctx).drawImage(file.img, x, y);
+        return this;
     }
     translate(x, y) {
         __classPrivateFieldGet(this, _ctx).translate(x, y);
