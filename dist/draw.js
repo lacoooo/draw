@@ -178,7 +178,7 @@ class Draw extends _Input__WEBPACK_IMPORTED_MODULE_0__["Input"] {
         if (!this.setupParams) {
             this.setupParams = cb;
         }
-        if (__classPrivateFieldGet(this, _preloadLeftCount) > 0)
+        if (__classPrivateFieldGet(this, _preloadLeftCount) > 0 && this.frame === 0)
             return;
         if (cb)
             cb(__classPrivateFieldGet(this, _ctx));
@@ -187,7 +187,7 @@ class Draw extends _Input__WEBPACK_IMPORTED_MODULE_0__["Input"] {
         if (!this.loopParams) {
             this.loopParams = cb;
         }
-        if (__classPrivateFieldGet(this, _preloadLeftCount) > 0)
+        if (__classPrivateFieldGet(this, _preloadLeftCount) > 0 && this.frame === 0)
             return;
         if (document.hidden === true) {
             requestAnimationFrame(this.loop.bind(this, cb));
@@ -320,42 +320,53 @@ class Draw extends _Input__WEBPACK_IMPORTED_MODULE_0__["Input"] {
         __classPrivateFieldGet(this, _ctx).fillRect(0, 0, this.width, this.height);
         return this;
     }
-    async loadMedia(path) {
+    async loadMedia(path, file) {
         __classPrivateFieldSet(this, _preloadLeftCount, +__classPrivateFieldGet(this, _preloadLeftCount) + 1);
         const res = await fetch(path, { mode: 'cors' })
-            .then(res => {
-            if (res.ok) {
-                return res.blob();
-            }
-            throw new Error('Network response was not ok.');
-        })
-            .then((myBlob) => {
-            var objectURL = URL.createObjectURL(myBlob);
-            return objectURL;
-        })
             .catch(err => {
             throw new Error('There has been a problem with your fetch operation: ' + err.message);
         });
+        if (!res.ok) {
+            throw new Error('Network response was not ok.');
+        }
+        const blob = await res.blob()
+            .catch(err => {
+            throw new Error('There has been a problem with your response blob(): ' + err.message);
+        });
+        const objectURL = URL.createObjectURL(blob);
+        if (file instanceof HTMLImageElement) {
+            await new Promise(r => {
+                file.src = objectURL;
+                file.onload = () => {
+                    r();
+                };
+                file.onerror = err => {
+                    throw new Error('Image onload error: ' + err);
+                };
+            });
+        }
         __classPrivateFieldSet(this, _preloadLeftCount, +__classPrivateFieldGet(this, _preloadLeftCount) - 1);
-        if (__classPrivateFieldGet(this, _preloadLeftCount) === 0) {
+        if (__classPrivateFieldGet(this, _preloadLeftCount) === 0 && this.frame === 0) {
             setTimeout(() => {
                 this.setup(this.setupParams);
                 this.loop(this.loopParams);
             }, 0);
         }
-        return res;
+        return file || undefined;
     }
-    async loadImage(path) {
-        return new Promise(async (r) => {
-            const img = new Image();
-            img.src = await this.loadMedia(path);
-            img.onload = () => {
-                r(img);
-            };
-            img.onerror = err => {
-                throw new Error('Image onload error: ' + err);
-            };
-        });
+    loadImage(path) {
+        const img = new Image();
+        const imgObject = {
+            img,
+            get width() {
+                return img.width;
+            },
+            get height() {
+                return img.height;
+            }
+        };
+        this.loadMedia(path, img);
+        return imgObject;
     }
 }
 _canvas = new WeakMap(), _ctx = new WeakMap(), _loppOnce = new WeakMap(), _preloadLeftCount = new WeakMap();
@@ -627,6 +638,15 @@ class Vec3 {
     static getRandomVec(width = 100, height = width, deep = width) {
         return new Vec3(Math.random() * width, Math.random() * height, Math.random() * deep);
     }
+    static rotateZ(vec, deg) {
+        return vec.clone().rotateZ(deg);
+    }
+    static rotateX(vec, deg) {
+        return vec.clone().rotateX(deg);
+    }
+    static rotateY(vec, deg) {
+        return vec.clone().rotateY(deg);
+    }
     get x() {
         return __classPrivateFieldGet(this, _vect)[0];
     }
@@ -798,6 +818,24 @@ class Vec3 {
         const diff = this.clone().sub(from);
         const radian = Math.atan2(diff.y, diff.x);
         return Vec3.radian2Degree(radian);
+    }
+    rotateZ(deg) {
+        const atopi = Vec3.degree2Radian(deg);
+        this.x = this.x * Math.cos(atopi) - this.y * Math.sin(atopi);
+        this.y = this.y * Math.cos(atopi) + this.x * Math.sin(atopi);
+        return this;
+    }
+    rotateX(deg) {
+        const atopi = Vec3.degree2Radian(deg);
+        this.z = this.z * Math.cos(atopi) - this.y * Math.sin(atopi);
+        this.y = this.y * Math.cos(atopi) + this.z * Math.sin(atopi);
+        return this;
+    }
+    rotateY(deg) {
+        const atopi = Vec3.degree2Radian(deg);
+        this.x = this.x * Math.cos(atopi) - this.z * Math.sin(atopi);
+        this.z = this.z * Math.cos(atopi) + this.x * Math.sin(atopi);
+        return this;
     }
 }
 _vect = new WeakMap();

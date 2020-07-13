@@ -70,7 +70,7 @@ export class Vec3 {
     public static getRadian(vecA: Vec3, vecB: Vec3 = Vec3.right): number {
         return vecA.getRadian(vecB)
     }
-    
+
     public static radian2Degree(radian: number): number {
         return radian * 180 / Math.PI
     }
@@ -89,6 +89,18 @@ export class Vec3 {
 
     public static getRandomVec(width: number = 100, height: number = width, deep: number = width): Vec3 {
         return new Vec3(Math.random() * width, Math.random() * height, Math.random() * deep)
+    }
+
+    public static rotateZ(vec: Vec3, deg: number): Vec3 {
+        return vec.clone().rotateZ(deg)
+    }
+
+    public static rotateX(vec: Vec3, deg: number): Vec3{
+        return vec.clone().rotateX(deg)
+    }
+    
+    public static rotateY(vec: Vec3, deg: number): Vec3 {
+        return vec.clone().rotateY(deg)
     }
 
     #vect: Float32Array
@@ -291,6 +303,27 @@ export class Vec3 {
         const diff: Vec3 = this.clone().sub(from)
         const radian: number = Math.atan2(diff.y, diff.x)
         return Vec3.radian2Degree(radian)
+    }
+
+    public rotateZ(deg: number): this {
+        const atopi = Vec3.degree2Radian(deg)
+        this.x = this.x * Math.cos(atopi) - this.y * Math.sin(atopi)
+        this.y = this.y * Math.cos(atopi) + this.x * Math.sin(atopi)
+        return this
+    }
+
+    public rotateX(deg: number): this {
+        const atopi = Vec3.degree2Radian(deg)
+        this.z = this.z * Math.cos(atopi) - this.y * Math.sin(atopi)
+        this.y = this.y * Math.cos(atopi) + this.z * Math.sin(atopi)
+        return this
+    }
+
+    public rotateY(deg: number): this {
+        const atopi = Vec3.degree2Radian(deg)
+        this.x = this.x * Math.cos(atopi) - this.z * Math.sin(atopi)
+        this.z = this.z * Math.cos(atopi) + this.x * Math.sin(atopi)
+        return this
     }
 
 }

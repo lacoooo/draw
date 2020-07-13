@@ -77,7 +77,7 @@ export class Draw extends Input implements Idraw {
             this.setupParams = cb
         }
 
-        if (this.#preloadLeftCount > 0) return
+        if (this.#preloadLeftCount > 0 && this.frame === 0) return
 
         if (cb) cb(this.#ctx)
     }
@@ -91,7 +91,7 @@ export class Draw extends Input implements Idraw {
             this.loopParams = cb
         }
 
-        if (this.#preloadLeftCount > 0) return
+        if (this.#preloadLeftCount > 0 && this.frame === 0) return
 
         if (document.hidden === true) {
             requestAnimationFrame(this.loop.bind(this, cb))
@@ -259,43 +259,61 @@ export class Draw extends Input implements Idraw {
         return this
     }
 
-    private async loadMedia(path: string): Promise<string> {
+    private async loadMedia(path: string, file?: HTMLImageElement): Promise<HTMLImageElement | undefined> {
         this.#preloadLeftCount ++
 
         const res = await fetch(path, { mode: 'cors' })
-            .then(res => {
-                if (res.ok) {
-                    return res.blob()
+        .catch(err => {
+            throw new Error('There has been a problem with your fetch operation: ' + err.message)
+        })
+
+        if (!res.ok) {
+            throw new Error('Network response was not ok.')
+        }
+
+        const blob = await res.blob()
+        .catch(err => {
+            throw new Error('There has been a problem with your response blob(): ' + err.message)
+        })
+
+        const objectURL: string = URL.createObjectURL(blob)
+
+        if (file instanceof HTMLImageElement) {
+            await new Promise(r => {
+                file.src = objectURL
+                file.onload = () => {
+                    r()
                 }
-                throw new Error('Network response was not ok.')
+                file.onerror = err => {
+                    throw new Error('Image onload error: ' + err)
+                }
             })
-            .then((myBlob: Blob) => {
-                var objectURL: string = URL.createObjectURL(myBlob)
-                return objectURL
-            })
-            .catch(err => {
-                throw new Error('There has been a problem with your fetch operation: ' + err.message)
-            })
+        }
+
         this.#preloadLeftCount --
-        if (this.#preloadLeftCount === 0) {
+        if (this.#preloadLeftCount === 0 && this.frame === 0) {
             setTimeout(() => {
                 this.setup(this.setupParams)
                 this.loop(this.loopParams)
             }, 0)
         }
-        return res
+        return file || undefined
     }
 
-    public async loadImage(path: string): Promise<HTMLImageElement> {
-        return new Promise(async (r: (img: HTMLImageElement) => void) => {
-            const img: HTMLImageElement = new Image()
-            img.src = await this.loadMedia(path)
-            img.onload = () => {
-                r(img)
+    public loadImage(path: string): any {
+
+        const img = new Image()
+        
+        const imgObject = {
+            img,
+            get width() {
+                return img.width
+            },
+            get height() {
+                return img.height
             }
-            img.onerror = err => {
-                throw new Error('Image onload error: ' + err)
-            }
-        })
+        }
+        this.loadMedia(path, img)
+        return imgObject
     }
 }

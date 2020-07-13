@@ -37,12 +37,15 @@
         let points = []
 
         d.preload(
-            async () => {
+            () => {
+                img = d.loadImage('./1.jpg')
             }
         )
 
         d.setup(
             (ctx) => {
+                console.log(33333333)
+                ctx.drawImage(img.img, 0, 0)
                 ctx.lineWidth = 0.2
                 d.strokeOpen = true
                 points = d.getBezierPoints(
@@ -54,8 +57,7 @@
         
         d.loop(
             (ctx) => {
-                d.clear()
-                console.log(1)
+                // d.clear()
 
                 d.strokeStyle('rgba(200,0,0,0.06)')
 
