@@ -1,4 +1,4 @@
-import { Idraw, Isetup } from './Types'
+import { Idraw, Isetup, IimgObject } from './Types'
 import { Input } from './Input'
 import { Vec3 } from './Vector'
 
@@ -182,6 +182,10 @@ export class Draw extends Input implements Idraw {
         return this
     }
 
+    public image(file: IimgObject, x: number, y: number) {
+        this.#ctx.drawImage(file.img, x, y)
+    }
+
     public translate(x: number, y: number): this {
         this.#ctx.translate(x, y)
         return this
@@ -304,7 +308,7 @@ export class Draw extends Input implements Idraw {
 
         const img = new Image()
         
-        const imgObject = {
+        const imgObject: IimgObject = {
             img,
             get width() {
                 return img.width

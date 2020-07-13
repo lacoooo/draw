@@ -44,8 +44,7 @@
 
         d.setup(
             (ctx) => {
-                console.log(33333333)
-                ctx.drawImage(img.img, 0, 0)
+                d.image(img, 0, 0)
                 ctx.lineWidth = 0.2
                 d.strokeOpen = true
                 points = d.getBezierPoints(

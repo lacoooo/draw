@@ -27,3 +27,9 @@ export interface Isetup {
     width?: number
     height?: number
 }
+
+export interface IimgObject {
+    img: HTMLImageElement
+    width: number
+    height: number
+}
