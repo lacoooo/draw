@@ -1,7 +1,6 @@
 import { Idraw, Isetup, IimgObject } from './Types'
 import { Input } from './Input'
 import { Vec3 } from './Vector'
-import { stat } from 'fs/promises'
 
 export class Draw extends Input implements Idraw {
 
@@ -326,7 +325,7 @@ export class Draw extends Input implements Idraw {
             get height() {
                 return img.height
             }
-            pixels: undefined
+            pixels!: Uint8ClampedArray
             getColor(x: number, y: number) {
                 x = Math.round(x)
                 y = Math.round(y)
@@ -343,7 +342,7 @@ export class Draw extends Input implements Idraw {
                 result.a = p[start + 3]
                 return result
             }
-        }()
+        }
 
         this.loadMedia(path, imgObj)
         return imgObj

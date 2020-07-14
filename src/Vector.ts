@@ -103,6 +103,103 @@ export class Vec3 {
         return vec.clone().rotateY(deg)
     }
 
+    public static cartesian(n: number): Vec3 {
+        return new Vec3(Math.cos(n), Math.sin(n))
+    }
+
+    public static astroid(n: number): Vec3 {
+        const sinn = Math.sin(n)
+        const cosn = Math.cos(n)
+        
+        const xt = Math.pow(sinn, 3)
+        const yt = Math.pow(cosn, 3)
+        
+        return new Vec3(xt, yt)
+    }
+
+    public static kampyle(n: number): Vec3 {
+        const sec = 1 / Math.sin(n)
+        
+        const xt = sec
+        const yt = Math.tan(n) * sec
+    
+        return new Vec3(xt, yt)
+    }
+
+    public static rect_hyperbola(n: number): Vec3 {
+        
+        const xt = 1 / Math.sin(n)
+        const yt = Math.tan(n)
+        
+        return new Vec3(xt, yt)
+    }
+
+    public static superformula(n: number): Vec3 {
+        const superformula_a = 1
+        const superformula_b = 1
+        const superformula_m = 6
+        const superformula_n1 = 1
+        const superformula_n2 = 7
+        const superformula_n3 = 8
+        const f1 = Math.pow(Math.abs(Math.cos(superformula_m*n/4)/superformula_a), superformula_n2)
+        const f2 = Math.pow(Math.abs(Math.sin(superformula_m*n/4)/superformula_b), superformula_n3)
+        const fr = Math.pow(f1 + f2, -1/superformula_n1)
+        
+        const xt = Math.cos(n) * fr
+        const yt = Math.sin(n) * fr
+        
+        return new Vec3(xt, yt)
+    }
+
+    public static swirl(vec: Vec3, weight = 1): Vec3 {
+        const r2 = Math.pow(vec.x, 2) + Math.pow(vec.y, 2)
+        const sinr = Math.sin(r2)
+        const cosr = Math.cos(r2)
+        const newX = 0.8 * (sinr * vec.x - cosr * vec.y)
+        const newY = 0.8 * (cosr * vec.y + sinr * vec.y)
+        return new Vec3(weight * newX, weight * newY)
+    }
+
+    public static sinusoidal(vec: Vec3, amount = 1): Vec3 {
+        return new Vec3(amount * Math.sin(vec.x), amount * Math.sin(vec.y))
+    }
+
+    public static polar(vec: Vec3, weight = 1): Vec3 {
+        const r = vec.length
+        const theta = Math.atan2(vec.x, vec.y)
+        const x = theta / Math.PI
+        const y = r - 2.0
+        return new Vec3(weight * x, weight * y)
+    }
+
+    public static hyperbolic(vec: Vec3, amount = 1): Vec3 {
+        const r = vec.length + Math.pow(10, -10)
+        const theta = Math.atan2(vec.x, vec.y)
+        const x = amount * Math.sin(theta) / r
+        const y = amount * Math.cos(theta) * r
+        return new Vec3(x, y)
+    }
+
+    public static power(vec: Vec3, weight = 1): Vec3 {
+        const theta = Math.atan2(vec.y, vec.x)
+        const sinr = Math.sin(theta)
+        const cosr = Math.cos(theta)
+        const pow = weight * Math.pow(vec.length, sinr)
+        return new Vec3(pow * cosr, pow * sinr)
+    }
+
+    public static cosine(vec: Vec3, weight = 1): Vec3 {
+        const pix = vec.x * Math.PI
+        const x = weight * 0.8 * Math.cos(pix) * Math.cosh(vec.y)
+        const y = -weight * 0.8 * Math.sin(pix) * Math.sinh(vec.y)
+        return new Vec3(x, y)
+    }
+
+    public static vexp(vec: Vec3, weight = 1): Vec3 {
+        const r = weight * Math.exp(vec.x)
+        return new Vec3(r * Math.cos(vec.y), r * Math.sin(vec.y))
+    }
+
     #vect: Float32Array
 
     get x() {

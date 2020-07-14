@@ -32,6 +32,6 @@ export interface IimgObject {
     img: HTMLImageElement
     width: number
     height: number
-    pixels: Uint8ClampedArray | undefined
+    pixels: Uint8ClampedArray
     getColor(x:number, y: number): number[]
 }
