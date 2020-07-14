@@ -1,93 +1,53 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>temp</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-        }
+      * {
+        margin: 0;
+        padding: 0;
+      }
 
-        canvas {
-            display: block;
-            box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
-        }
+      canvas {
+        display: block;
+        box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
+      }
     </style>
-</head>
+  </head>
 
-<body>
+  <body>
     <script src="../dist/draw.js"></script>
     <script>
-        const d = new Draw({
-            width: window.width,
-            height: 800
-        })
+      const d = new Draw({
+        width: window.width,
+        height: 800,
+      });
 
-        const center = new Vec3(d.width / 2, d.height / 2)
+      d.preload(() => {});
 
-        const bezierPos = [
-            Vec3.getRandomVec(d.width, d.height, 0),
-            Vec3.getRandomVec(d.width, d.height, 0),
-            Vec3.getRandomVec(d.width, d.height, 0),
-            Vec3.getRandomVec(d.width, d.height, 0)
-        ]
-        let points = []
+      d.setup((ctx) => {
+        ctx.lineWidth = 1;
+        d.strokeOpen = true;
+        d.circle(10, d.center.x, d.center.y)
+      });
 
-        d.preload(
-            () => {
-                img = d.loadImage('./1.jpg')
-            }
-        )
+      d.loop((ctx) => {
+        d.save()
+        d.translate(d.center.x, d.center.y)
+        for (let i = 0; i < 10; i++) {
+          const vec = Vec3.getRandomGaussianVec(0, 60);
+          d.point(vec.x, vec.y);
+        }
+        d.restore()
+      });
 
-        d.setup(
-            (ctx) => {
-                d.image(img, 0, 0)
-                ctx.lineWidth = 0.2
-                d.strokeOpen = true
-                points = d.getBezierPoints(
-                    ...bezierPos, 100
-                )
-                d.loppOnce()
-            }
-        )
-        
-        d.loop(
-            (ctx) => {
-                // d.clear()
-
-                d.strokeStyle('rgba(200,0,0,0.06)')
-
-                const lens = []
-
-                points.reduce((a, b, i) => {
-                    const dist = Vec3.dist(a, b)
-                    for (let i = 0; i < dist; i += 4) {
-                        if (Math.random() > .7) continue
-                        const pos = Vec3.lerp(a, b, i / dist)
-                        d.point(pos.x, pos.y)
-                    }
-                    return b
-                })
-
-                d.strokeStyle('rgba(0,200,0,1)')
-                d.line(bezierPos[0].x, bezierPos[0].y, bezierPos[1].x, bezierPos[1].y)
-                d.line(bezierPos[2].x, bezierPos[2].y, bezierPos[3].x, bezierPos[3].y)
-
-            }
-        )
-
-        d.click(
-            (e) => {
-                if (e === ' ') {
-                    d.clear()
-                }
-            }
-        )
-
+      d.click((e) => {
+        if (e === " ") {
+          d.clear();
+        }
+      });
     </script>
-</body>
-
+  </body>
 </html>

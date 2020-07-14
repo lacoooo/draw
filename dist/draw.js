@@ -146,6 +146,7 @@ class Draw extends _Input__WEBPACK_IMPORTED_MODULE_0__["Input"] {
     set width(w) { __classPrivateFieldGet(this, _canvas).width = w; }
     get height() { return __classPrivateFieldGet(this, _canvas).height; }
     set height(h) { __classPrivateFieldGet(this, _canvas).height = h; }
+    get center() { return new _Vector__WEBPACK_IMPORTED_MODULE_1__["Vec3"](this.width / 2, this.height / 2); }
     canvasElementInit(params) {
         const { canvasId } = params || {};
         if (canvasId) {
@@ -248,12 +249,19 @@ class Draw extends _Input__WEBPACK_IMPORTED_MODULE_0__["Input"] {
         return this;
     }
     point(x, y) {
+        x = Math.round(x);
+        y = Math.round(y);
+        this.save();
+        this.strokeOpen = false;
+        this.fillOpen = true;
+        this.fillStyle(__classPrivateFieldGet(this, _ctx).strokeStyle);
         if (__classPrivateFieldGet(this, _ctx).lineWidth > 1) {
             this.circle(__classPrivateFieldGet(this, _ctx).lineWidth / 2, x, y);
         }
         else {
             this.rect(x, y, 1, 1);
         }
+        this.restore();
         return this;
     }
     image(file, x, y) {
@@ -671,6 +679,22 @@ class Vec3 {
     }
     static getRandomVec(width = 100, height = width, deep = width) {
         return new Vec3(Math.random() * width, Math.random() * height, Math.random() * deep);
+    }
+    static getRandomGaussianVec(mean = 100, sd = 50) {
+        const getNum = () => {
+            let y1, x1, x2, w;
+            do {
+                x1 = Math.random() * 2 - 1;
+                x2 = Math.random() * 2 - 1;
+                w = x1 * x1 + x2 * x2;
+            } while (w >= 1);
+            w = Math.sqrt(-2 * Math.log(w) / w);
+            y1 = x1 * w;
+            const m = mean || 0;
+            const s = sd || 1;
+            return y1 * s + m;
+        };
+        return new Vec3(getNum(), getNum());
     }
     static rotateZ(vec, deg) {
         return vec.clone().rotateZ(deg);

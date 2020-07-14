@@ -16,6 +16,8 @@ export class Draw extends Input implements Idraw {
     get height() { return this.#canvas.height }
     set height(h: number) { this.#canvas.height = h }
 
+    get center() { return new Vec3(this.width / 2, this.height / 2) }
+
     strokeOpen = false
     fillOpen = false
 
@@ -174,11 +176,18 @@ export class Draw extends Input implements Idraw {
     }
 
     public point(x: number, y: number): this {
+        x = Math.round(x)
+        y = Math.round(y)
+        this.save()
+        this.strokeOpen = false
+        this.fillOpen = true
+        this.fillStyle(this.#ctx.strokeStyle)
         if (this.#ctx.lineWidth > 1) {
             this.circle(this.#ctx.lineWidth / 2, x, y)
         } else {
             this.rect(x, y, 1, 1)
         }
+        this.restore()
         return this
     }
 
@@ -212,12 +221,12 @@ export class Draw extends Input implements Idraw {
         return this
     }
 
-    public fillStyle(color: string): this {
+    public fillStyle(color: string | CanvasGradient | CanvasPattern): this {
         this.#ctx.fillStyle = color
         return this
     }
 
-    public strokeStyle(color: string): this {
+    public strokeStyle(color: string | CanvasGradient | CanvasPattern): this {
         this.#ctx.strokeStyle = color
         return this
     }

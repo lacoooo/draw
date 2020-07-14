@@ -91,14 +91,32 @@ export class Vec3 {
         return new Vec3(Math.random() * width, Math.random() * height, Math.random() * deep)
     }
 
+    public static getRandomGaussianVec(mean: number = 100, sd: number = 50): Vec3 {
+        const getNum = (): number => {
+            let y1, x1, x2, w
+            do {
+                x1 = Math.random() * 2 - 1
+                x2 = Math.random() * 2 - 1
+                w = x1 * x1 + x2 * x2
+            } while (w >= 1)
+            w = Math.sqrt(-2 * Math.log(w) / w)
+            y1 = x1 * w
+
+            const m = mean || 0
+            const s = sd || 1
+            return y1 * s + m
+        }
+        return new Vec3(getNum(), getNum())
+    }
+
     public static rotateZ(vec: Vec3, deg: number): Vec3 {
         return vec.clone().rotateZ(deg)
     }
 
-    public static rotateX(vec: Vec3, deg: number): Vec3{
+    public static rotateX(vec: Vec3, deg: number): Vec3 {
         return vec.clone().rotateX(deg)
     }
-    
+
     public static rotateY(vec: Vec3, deg: number): Vec3 {
         return vec.clone().rotateY(deg)
     }
@@ -110,27 +128,27 @@ export class Vec3 {
     public static astroid(n: number): Vec3 {
         const sinn = Math.sin(n)
         const cosn = Math.cos(n)
-        
+
         const xt = Math.pow(sinn, 3)
         const yt = Math.pow(cosn, 3)
-        
+
         return new Vec3(xt, yt)
     }
 
     public static kampyle(n: number): Vec3 {
         const sec = 1 / Math.sin(n)
-        
+
         const xt = sec
         const yt = Math.tan(n) * sec
-    
+
         return new Vec3(xt, yt)
     }
 
     public static rect_hyperbola(n: number): Vec3 {
-        
+
         const xt = 1 / Math.sin(n)
         const yt = Math.tan(n)
-        
+
         return new Vec3(xt, yt)
     }
 
@@ -141,13 +159,13 @@ export class Vec3 {
         const superformula_n1 = 1
         const superformula_n2 = 7
         const superformula_n3 = 8
-        const f1 = Math.pow(Math.abs(Math.cos(superformula_m*n/4)/superformula_a), superformula_n2)
-        const f2 = Math.pow(Math.abs(Math.sin(superformula_m*n/4)/superformula_b), superformula_n3)
-        const fr = Math.pow(f1 + f2, -1/superformula_n1)
-        
+        const f1 = Math.pow(Math.abs(Math.cos(superformula_m * n / 4) / superformula_a), superformula_n2)
+        const f2 = Math.pow(Math.abs(Math.sin(superformula_m * n / 4) / superformula_b), superformula_n3)
+        const fr = Math.pow(f1 + f2, -1 / superformula_n1)
+
         const xt = Math.cos(n) * fr
         const yt = Math.sin(n) * fr
-        
+
         return new Vec3(xt, yt)
     }
 
