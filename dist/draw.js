@@ -338,13 +338,22 @@ class Draw extends _Input__WEBPACK_IMPORTED_MODULE_0__["Input"] {
             throw new Error('There has been a problem with your response blob(): ' + err.message);
         });
         const objectURL = URL.createObjectURL(blob);
-        if (file instanceof HTMLImageElement) {
+        if (file && file.img instanceof HTMLImageElement) {
             await new Promise(r => {
-                file.src = objectURL;
-                file.onload = () => {
+                file.img.src = objectURL;
+                file.img.onload = () => {
+                    const canvas = this._createElement("canvas");
+                    const ctx = canvas.getContext('2d');
+                    canvas.width = file.width;
+                    canvas.height = file.height;
+                    if (ctx) {
+                        ctx.drawImage(file.img, 0, 0);
+                        const pixelData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                        file.pixels = pixelData.data;
+                    }
                     r();
                 };
-                file.onerror = err => {
+                file.img.onerror = err => {
                     throw new Error('Image onload error: ' + err);
                 };
             });
@@ -356,21 +365,42 @@ class Draw extends _Input__WEBPACK_IMPORTED_MODULE_0__["Input"] {
                 this.loop(this.loopParams);
             }, 0);
         }
-        return file || undefined;
     }
     loadImage(path) {
         const img = new Image();
-        const imgObject = {
-            img,
+        const imgObj = new class {
+            constructor() {
+                this.img = img;
+            }
             get width() {
                 return img.width;
-            },
+            }
             get height() {
                 return img.height;
             }
-        };
-        this.loadMedia(path, img);
-        return imgObject;
+            getColor(x, y) {
+                x = Math.round(x);
+                y = Math.round(y);
+                if (x < 0)
+                    x = 0;
+                else if (x > this.width)
+                    x = this.width;
+                if (y < 0)
+                    y = 0;
+                else if (y > this.height)
+                    y = this.height;
+                const start = (x * y + x) * 4;
+                const p = this.pixels || [];
+                const result = [p[start], p[start + 1], p[start + 2], p[start + 3]];
+                result.r = p[start];
+                result.g = p[start + 1];
+                result.b = p[start + 2];
+                result.a = p[start + 3];
+                return result;
+            }
+        }();
+        this.loadMedia(path, imgObj);
+        return imgObj;
     }
 }
 _canvas = new WeakMap(), _ctx = new WeakMap(), _loppOnce = new WeakMap(), _preloadLeftCount = new WeakMap();

@@ -1,6 +1,7 @@
 import { Idraw, Isetup, IimgObject } from './Types'
 import { Input } from './Input'
 import { Vec3 } from './Vector'
+import { stat } from 'fs/promises'
 
 export class Draw extends Input implements Idraw {
 
@@ -264,7 +265,7 @@ export class Draw extends Input implements Idraw {
         return this
     }
 
-    private async loadMedia(path: string, file?: HTMLImageElement): Promise<HTMLImageElement | undefined> {
+    private async loadMedia(path: string, file?: IimgObject): Promise<void> {
         this.#preloadLeftCount ++
 
         const res = await fetch(path, { mode: 'cors' })
@@ -283,13 +284,22 @@ export class Draw extends Input implements Idraw {
 
         const objectURL: string = URL.createObjectURL(blob)
 
-        if (file instanceof HTMLImageElement) {
+        if (file && file.img instanceof HTMLImageElement) {
             await new Promise(r => {
-                file.src = objectURL
-                file.onload = () => {
+                file.img.src = objectURL
+                file.img.onload = () => {
+                    const canvas = this._createElement("canvas") as HTMLCanvasElement
+                    const ctx = canvas.getContext('2d')
+                    canvas.width = file.width
+                    canvas.height = file.height
+                    if (ctx) {
+                        ctx.drawImage(file.img, 0, 0)
+                        const pixelData: ImageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
+                        file.pixels = pixelData.data
+                    }
                     r()
                 }
-                file.onerror = err => {
+                file.img.onerror = err => {
                     throw new Error('Image onload error: ' + err)
                 }
             })
@@ -302,23 +312,40 @@ export class Draw extends Input implements Idraw {
                 this.loop(this.loopParams)
             }, 0)
         }
-        return file || undefined
     }
 
     public loadImage(path: string): any {
 
         const img = new Image()
         
-        const imgObject: IimgObject = {
-            img,
+        const imgObj = new class implements IimgObject {
+            img = img
             get width() {
                 return img.width
-            },
+            }
             get height() {
                 return img.height
             }
-        }
-        this.loadMedia(path, img)
-        return imgObject
+            pixels: undefined
+            getColor(x: number, y: number) {
+                x = Math.round(x)
+                y = Math.round(y)
+                if (x < 0) x = 0
+                else if (x > this.width) x = this.width
+                if (y < 0) y = 0
+                else if (y > this.height) y = this.height
+                const start = (x * y + x) * 4
+                const p = this.pixels || []
+                const result: any = [p[start], p[start + 1], p[start + 2], p[start + 3]]
+                result.r = p[start]
+                result.g = p[start + 1]
+                result.b = p[start + 2]
+                result.a = p[start + 3]
+                return result
+            }
+        }()
+
+        this.loadMedia(path, imgObj)
+        return imgObj
     }
 }
