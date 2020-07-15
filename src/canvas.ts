@@ -1,4 +1,4 @@
-import { Idraw, Isetup, IimgObject } from './Types'
+import { Idraw, Iparams, Iinit, IimgObject } from './Types'
 import { Input } from './Input'
 import { Vec3 } from './Vector'
 
@@ -27,18 +27,40 @@ export class Draw extends Input implements Idraw {
 
     #preloadLeftCount = 0
 
-    constructor(params?: Isetup) {
+    constructor(params: Iparams = {init: {}}) {
         super()
 
-        this.canvasElementInit(params)
+        this.canvasElementInit(params.init)
 
-        this.canvasSizeInit(params)
+        this.canvasSizeInit(params.init)
 
         this.mouseEventInit(this.#canvas)
+
+        const {
+            preload,
+            setup,
+            loop,
+            click
+        } = params
+
+        setTimeout(() => {
+            if (preload) {
+                this.preload(preload)
+            }
+            if (setup) {
+                this.setup(setup)
+            }
+            if (loop) {
+                this.loop(loop)
+            }
+            if (click) {
+                this.click(click)
+            }
+        }, 0)
     }
 
-    private canvasElementInit(params?: Isetup) {
-        const { canvasId } = params || {}
+    private canvasElementInit(init?: Iinit) {
+        const { canvasId } = init || {}
         if (canvasId) {
             const canvas = document.getElementById(canvasId) as HTMLCanvasElement
             if (canvas !== null) this.#canvas = canvas
@@ -51,8 +73,8 @@ export class Draw extends Input implements Idraw {
         this.#ctx = this.#canvas.getContext('2d') as CanvasRenderingContext2D
     }
 
-    private canvasSizeInit(params?: Isetup) {
-        const { width, height } = params || {}
+    private canvasSizeInit(init?: Iinit) {
+        const { width, height } = init || {}
         this.width = width || 1000
         this.height = height || 1000
     }
@@ -158,6 +180,17 @@ export class Draw extends Input implements Idraw {
         this.#ctx.lineTo(x2, y2)
         this.closePath()
         this.draw()
+        return this
+    }
+
+    public dashline(x1: number, y1: number, x2: number, y2: number, segments: number[] = [5, 5]): this {
+        this.save()
+        this.beginPath()
+        this.#ctx.setLineDash(segments)
+        this.#ctx.moveTo(x1, y1)
+        this.#ctx.lineTo(x2, y2)
+        this.draw()
+        this.restore()
         return this
     }
 
@@ -355,5 +388,15 @@ export class Draw extends Input implements Idraw {
 
         this.loadMedia(path, imgObj)
         return imgObj
+    }
+
+    public saveFrame(): void {
+        const canvasData = this.#canvas.toDataURL("image/png")
+        const aTag = document.createElement("a")
+        aTag.download = String(+ new Date() + Math.round(Math.random() * 1000))
+        aTag.href = canvasData
+        document.body.appendChild(aTag)
+        aTag.click()
+        aTag.remove()
     }
 }

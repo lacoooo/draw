@@ -129,7 +129,7 @@ var _canvas, _ctx, _loppOnce, _preloadLeftCount;
 
 
 class Draw extends _Input__WEBPACK_IMPORTED_MODULE_0__["Input"] {
-    constructor(params) {
+    constructor(params = { init: {} }) {
         super();
         _canvas.set(this, void 0);
         _ctx.set(this, void 0);
@@ -138,17 +138,32 @@ class Draw extends _Input__WEBPACK_IMPORTED_MODULE_0__["Input"] {
         this.frame = 0;
         _loppOnce.set(this, false);
         _preloadLeftCount.set(this, 0);
-        this.canvasElementInit(params);
-        this.canvasSizeInit(params);
+        this.canvasElementInit(params.init);
+        this.canvasSizeInit(params.init);
         this.mouseEventInit(__classPrivateFieldGet(this, _canvas));
+        const { preload, setup, loop, click } = params;
+        setTimeout(() => {
+            if (preload) {
+                this.preload(preload);
+            }
+            if (setup) {
+                this.setup(setup);
+            }
+            if (loop) {
+                this.loop(loop);
+            }
+            if (click) {
+                this.click(click);
+            }
+        }, 0);
     }
     get width() { return __classPrivateFieldGet(this, _canvas).width; }
     set width(w) { __classPrivateFieldGet(this, _canvas).width = w; }
     get height() { return __classPrivateFieldGet(this, _canvas).height; }
     set height(h) { __classPrivateFieldGet(this, _canvas).height = h; }
     get center() { return new _Vector__WEBPACK_IMPORTED_MODULE_1__["Vec3"](this.width / 2, this.height / 2); }
-    canvasElementInit(params) {
-        const { canvasId } = params || {};
+    canvasElementInit(init) {
+        const { canvasId } = init || {};
         if (canvasId) {
             const canvas = document.getElementById(canvasId);
             if (canvas !== null)
@@ -162,8 +177,8 @@ class Draw extends _Input__WEBPACK_IMPORTED_MODULE_0__["Input"] {
         }
         __classPrivateFieldSet(this, _ctx, __classPrivateFieldGet(this, _canvas).getContext('2d'));
     }
-    canvasSizeInit(params) {
-        const { width, height } = params || {};
+    canvasSizeInit(init) {
+        const { width, height } = init || {};
         this.width = width || 1000;
         this.height = height || 1000;
     }
@@ -234,6 +249,16 @@ class Draw extends _Input__WEBPACK_IMPORTED_MODULE_0__["Input"] {
         __classPrivateFieldGet(this, _ctx).lineTo(x2, y2);
         this.closePath();
         this.draw();
+        return this;
+    }
+    dashline(x1, y1, x2, y2, segments = [5, 5]) {
+        this.save();
+        this.beginPath();
+        __classPrivateFieldGet(this, _ctx).setLineDash(segments);
+        __classPrivateFieldGet(this, _ctx).moveTo(x1, y1);
+        __classPrivateFieldGet(this, _ctx).lineTo(x2, y2);
+        this.draw();
+        this.restore();
         return this;
     }
     rect(x, y, width = 100, height = 100) {
@@ -409,6 +434,15 @@ class Draw extends _Input__WEBPACK_IMPORTED_MODULE_0__["Input"] {
         };
         this.loadMedia(path, imgObj);
         return imgObj;
+    }
+    saveFrame() {
+        const canvasData = __classPrivateFieldGet(this, _canvas).toDataURL("image/png");
+        const aTag = document.createElement("a");
+        aTag.download = String(+new Date() + Math.round(Math.random() * 1000));
+        aTag.href = canvasData;
+        document.body.appendChild(aTag);
+        aTag.click();
+        aTag.remove();
     }
 }
 _canvas = new WeakMap(), _ctx = new WeakMap(), _loppOnce = new WeakMap(), _preloadLeftCount = new WeakMap();

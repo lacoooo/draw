@@ -1,53 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>temp</title>
     <style>
-      * {
-        margin: 0;
-        padding: 0;
-      }
+        * {
+            margin: 0;
+            padding: 0;
+        }
 
-      canvas {
-        display: block;
-        box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
-      }
+        canvas {
+            display: block;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
+        }
     </style>
-  </head>
+</head>
 
-  <body>
+<body>
     <script src="../dist/draw.js"></script>
     <script>
-      const d = new Draw({
-        width: window.width,
-        height: 800,
-      });
 
-      d.preload(() => {});
-
-      d.setup((ctx) => {
-        ctx.lineWidth = 1;
-        d.strokeOpen = true;
-        d.circle(10, d.center.x, d.center.y)
-      });
-
-      d.loop((ctx) => {
-        d.save()
-        d.translate(d.center.x, d.center.y)
-        for (let i = 0; i < 10; i++) {
-          const vec = Vec3.getRandomGaussianVec(0, 60);
-          d.point(vec.x, vec.y);
+        const params = {
+            init: {
+                width: window.width,
+                height: 800
+            },
+            preload: () => {
+                console.log(this)
+            },
+            setup: (ctx) => {
+                d.lineWidth(2)
+                d.strokeOpen = true
+                d.strokeStyle('rgba(0,0,0,0.3)')
+                d.dashline(d.center.x, d.center.y, d.width, d.center.y)
+                d.dashline(d.center.x, 0, d.center.x, d.center.y)
+            },
+            loop: (ctx) => {
+                d.strokeStyle('rgba(255,0,0,1)')
+                const vec = Vec3.diff(d.mousePos, d.center)
+                d.save()
+                d.translate(d.center.x, d.center.y)
+                // const t = Vec3.superformula(d.frame / 100).mult(200)
+                const t = Vec3.swirl(vec, 0.4)
+                d.point(t.x, t.y)
+                d.restore()
+            },
+            click: (e) => {
+                if (e === " ") {
+                    d.clear()
+                    d.setup(d.setupParams)
+                }
+            }
         }
-        d.restore()
-      });
 
-      d.click((e) => {
-        if (e === " ") {
-          d.clear();
-        }
-      });
+        const d = new Draw(params)
+
     </script>
-  </body>
+</body>
+
 </html>

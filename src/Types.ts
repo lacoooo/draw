@@ -11,21 +11,33 @@ declare global {
     }
 }
 
+export type Iinit = {
+    canvasId?: string
+    width?: number
+    height?: number
+}
+export type Ipreload = () => void
+export type Isetup = (ctx: CanvasRenderingContext2D) => void
+export type Iloop = (ctx: CanvasRenderingContext2D) => void
+export type Iclick = (key: KeyboardEvent['key'], keyCode: KeyboardEvent['keyCode']) => void
+
 export interface Idraw {
     frame: number
     width: number
     height: number
-    setup(cb: (ctx: CanvasRenderingContext2D) => void): void
-    loop(cb: (ctx: CanvasRenderingContext2D) => void): void
-    click(cb: (key: KeyboardEvent['key'], keyCode: KeyboardEvent['keyCode']) => void): void
+    setup(cb: Isetup): void
+    loop(cb: Iloop): void
+    click(cb: Iclick): void
     strokeWeight(width: number): void
     line(x1: number, y1: number, x2: number, y2: number): void
 }
 
-export interface Isetup {
-    canvasId?: string
-    width?: number
-    height?: number
+export interface Iparams {
+    preload?: Ipreload
+    init?: Iinit
+    setup?: Isetup
+    loop?: Iloop
+    click?: Iclick
 }
 
 export interface IimgObject {
