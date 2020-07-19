@@ -1,6 +1,7 @@
 import { Num, Geom } from './Num'
 import { Draw } from './Canvas'
 import { Vec3 } from './Vector'
+import { Line } from './Geometry'
 
 declare global {
     interface Window {
@@ -8,6 +9,7 @@ declare global {
         Num: typeof Num
         Geom: typeof Geom
         Vec3: typeof Vec3
+        Line: typeof Line
     }
 }
 
