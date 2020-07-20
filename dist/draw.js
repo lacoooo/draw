@@ -476,11 +476,11 @@ var __classPrivateFieldGet = (undefined && undefined.__classPrivateFieldGet) || 
 };
 var _line;
 
-const EPSILON = 0.00001;
+const EPSILON = 0.001;
 class Line {
     constructor(vecA, vecB) {
         _line.set(this, void 0);
-        __classPrivateFieldSet(this, _line, [vecA, vecB]);
+        __classPrivateFieldSet(this, _line, [vecA.clone(), vecB.clone()]);
     }
     static parallel(lineA, lineB) {
         if (Math.abs(lineA.slope - lineB.slope) < EPSILON) {
@@ -500,8 +500,14 @@ class Line {
     get a() {
         return __classPrivateFieldGet(this, _line)[0];
     }
+    set a(vec) {
+        __classPrivateFieldGet(this, _line)[0] = vec.clone();
+    }
     get b() {
         return __classPrivateFieldGet(this, _line)[1];
+    }
+    set b(vec) {
+        __classPrivateFieldGet(this, _line)[1] = vec.clone();
     }
     get slope() {
         return (this.b.y - this.a.y) / (this.b.x - this.a.x);

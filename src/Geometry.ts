@@ -1,6 +1,6 @@
 import { Vec3 } from './Vector'
 
-const EPSILON = 0.00001
+const EPSILON = 0.001
 
 export class Line {
 
@@ -25,8 +25,14 @@ export class Line {
     get a(): Vec3 {
         return this.#line[0]
     }
+    set a(vec: Vec3) {
+        this.#line[0] = vec.clone()
+    }
     get b(): Vec3 {
         return this.#line[1]
+    }
+    set b(vec: Vec3) {
+        this.#line[1] = vec.clone()
     }
     get slope(): number {
         return (this.b.y - this.a.y) / (this.b.x - this.a.x)
@@ -36,7 +42,7 @@ export class Line {
     }
 
     constructor(vecA: Vec3, vecB: Vec3) {
-        this.#line = [vecA, vecB]
+        this.#line = [vecA.clone(), vecB.clone()]
     }
 
     includePoint(point: Vec3): boolean {
