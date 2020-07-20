@@ -23,7 +23,7 @@ export class Draw extends Input implements Idraw {
 
     public frame = 0
 
-    #loppOnce = false
+    #loopOnce = false
 
     #preloadLeftCount = 0
 
@@ -127,13 +127,13 @@ export class Draw extends Input implements Idraw {
         if (cb) cb(this.#ctx)
         else throw Error('without callback')
 
-        if (this.#loppOnce === true) return
+        if (this.#loopOnce === true) return
 
         requestAnimationFrame(this.loop.bind(this, cb))
     }
 
-    public loppOnce() {
-        this.#loppOnce = true
+    public loopOnce() {
+        this.#loopOnce = true
     }
 
     /**

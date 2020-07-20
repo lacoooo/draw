@@ -125,7 +125,7 @@ var __classPrivateFieldSet = (undefined && undefined.__classPrivateFieldSet) || 
     privateMap.set(receiver, value);
     return value;
 };
-var _canvas, _ctx, _loppOnce, _preloadLeftCount;
+var _canvas, _ctx, _loopOnce, _preloadLeftCount;
 
 
 class Draw extends _Input__WEBPACK_IMPORTED_MODULE_0__["Input"] {
@@ -136,7 +136,7 @@ class Draw extends _Input__WEBPACK_IMPORTED_MODULE_0__["Input"] {
         this.strokeOpen = false;
         this.fillOpen = false;
         this.frame = 0;
-        _loppOnce.set(this, false);
+        _loopOnce.set(this, false);
         _preloadLeftCount.set(this, 0);
         this.canvasElementInit(params.init);
         this.canvasSizeInit(params.init);
@@ -216,12 +216,12 @@ class Draw extends _Input__WEBPACK_IMPORTED_MODULE_0__["Input"] {
             cb(__classPrivateFieldGet(this, _ctx));
         else
             throw Error('without callback');
-        if (__classPrivateFieldGet(this, _loppOnce) === true)
+        if (__classPrivateFieldGet(this, _loopOnce) === true)
             return;
         requestAnimationFrame(this.loop.bind(this, cb));
     }
-    loppOnce() {
-        __classPrivateFieldSet(this, _loppOnce, true);
+    loopOnce() {
+        __classPrivateFieldSet(this, _loopOnce, true);
     }
     strokeWeight(width) {
         __classPrivateFieldGet(this, _ctx).lineWidth = width;
@@ -445,7 +445,7 @@ class Draw extends _Input__WEBPACK_IMPORTED_MODULE_0__["Input"] {
         aTag.remove();
     }
 }
-_canvas = new WeakMap(), _ctx = new WeakMap(), _loppOnce = new WeakMap(), _preloadLeftCount = new WeakMap();
+_canvas = new WeakMap(), _ctx = new WeakMap(), _loopOnce = new WeakMap(), _preloadLeftCount = new WeakMap();
 
 
 /***/ }),
