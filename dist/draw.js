@@ -450,6 +450,84 @@ _canvas = new WeakMap(), _ctx = new WeakMap(), _loopOnce = new WeakMap(), _prelo
 
 /***/ }),
 
+/***/ "./src/Geometry.ts":
+/*!*************************!*\
+  !*** ./src/Geometry.ts ***!
+  \*************************/
+/*! exports provided: Line */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Line", function() { return Line; });
+/* harmony import */ var _Vector__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Vector */ "./src/Vector.ts");
+var __classPrivateFieldSet = (undefined && undefined.__classPrivateFieldSet) || function (receiver, privateMap, value) {
+    if (!privateMap.has(receiver)) {
+        throw new TypeError("attempted to set private field on non-instance");
+    }
+    privateMap.set(receiver, value);
+    return value;
+};
+var __classPrivateFieldGet = (undefined && undefined.__classPrivateFieldGet) || function (receiver, privateMap) {
+    if (!privateMap.has(receiver)) {
+        throw new TypeError("attempted to get private field on non-instance");
+    }
+    return privateMap.get(receiver);
+};
+var _line;
+
+const EPSILON = 0.00001;
+class Line {
+    constructor(vecA, vecB) {
+        _line.set(this, void 0);
+        __classPrivateFieldSet(this, _line, [vecA, vecB]);
+    }
+    static parallel(lineA, lineB) {
+        if (Math.abs(lineA.slope - lineB.slope) < EPSILON) {
+            return true;
+        }
+        return false;
+    }
+    static getIntersection(lineA, lineB) {
+        if (Math.abs(lineA.slope - lineB.slope) < EPSILON) {
+            console.warn('No Intersection.');
+            return null;
+        }
+        const x = (lineB.interception - lineA.interception) / (lineA.slope - lineB.slope);
+        const y = (lineA.slope * lineB.interception - lineA.interception * lineB.slope) / (lineA.slope - lineB.slope);
+        return new _Vector__WEBPACK_IMPORTED_MODULE_0__["Vec3"](x, y);
+    }
+    get a() {
+        return __classPrivateFieldGet(this, _line)[0];
+    }
+    get b() {
+        return __classPrivateFieldGet(this, _line)[1];
+    }
+    get slope() {
+        return (this.b.y - this.a.y) / (this.b.x - this.a.x);
+    }
+    get interception() {
+        return this.a.y - this.a.x * this.slope;
+    }
+    includePoint(point) {
+        if (point.x < Math.min(this.a.x, this.b.x))
+            return false;
+        else if (point.x > Math.max(this.a.x, this.b.x))
+            return false;
+        else if (point.y < Math.min(this.a.y, this.b.y))
+            return false;
+        else if (point.y > Math.max(this.a.y, this.b.y))
+            return false;
+        if (!Line.parallel(this, new Line(this.a, point)))
+            return false;
+        return true;
+    }
+}
+_line = new WeakMap();
+
+
+/***/ }),
+
 /***/ "./src/Input.ts":
 /*!**********************!*\
   !*** ./src/Input.ts ***!
@@ -792,13 +870,6 @@ class Vec3 {
         const y = r - 2.0;
         return new Vec3(weight * x, weight * y);
     }
-    static hyperbolic(vec, amount = 1) {
-        const r = vec.length + Math.pow(10, -10);
-        const theta = Math.atan2(vec.x, vec.y);
-        const x = amount * Math.sin(theta) / r;
-        const y = amount * Math.cos(theta) * r;
-        return new Vec3(x, y);
-    }
     static power(vec, weight = 1) {
         const theta = Math.atan2(vec.y, vec.x);
         const sinr = Math.sin(theta);
@@ -813,7 +884,7 @@ class Vec3 {
         return new Vec3(x, y);
     }
     static vexp(vec, weight = 1) {
-        const r = weight * Math.exp(vec.x);
+        const r = weight * Math.exp((vec.x + vec.y) / 2);
         return new Vec3(r * Math.cos(vec.y), r * Math.sin(vec.y));
     }
     get x() {
@@ -1028,6 +1099,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Canvas__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Canvas */ "./src/Canvas.ts");
 /* harmony import */ var _Num__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Num */ "./src/Num.ts");
 /* harmony import */ var _Vector__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Vector */ "./src/Vector.ts");
+/* harmony import */ var _Geometry__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Geometry */ "./src/Geometry.ts");
+
 
 
 
@@ -1035,6 +1108,7 @@ window.Draw = _Canvas__WEBPACK_IMPORTED_MODULE_0__["Draw"];
 window.Num = _Num__WEBPACK_IMPORTED_MODULE_1__["Num"];
 window.Geom = _Num__WEBPACK_IMPORTED_MODULE_1__["Geom"];
 window.Vec3 = _Vector__WEBPACK_IMPORTED_MODULE_2__["Vec3"];
+window.Line = _Geometry__WEBPACK_IMPORTED_MODULE_3__["Line"];
 
 
 /***/ })

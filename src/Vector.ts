@@ -190,14 +190,6 @@ export class Vec3 {
         return new Vec3(weight * x, weight * y)
     }
 
-    public static hyperbolic(vec: Vec3, amount = 1): Vec3 {
-        const r = vec.length + Math.pow(10, -10)
-        const theta = Math.atan2(vec.x, vec.y)
-        const x = amount * Math.sin(theta) / r
-        const y = amount * Math.cos(theta) * r
-        return new Vec3(x, y)
-    }
-
     public static power(vec: Vec3, weight = 1): Vec3 {
         const theta = Math.atan2(vec.y, vec.x)
         const sinr = Math.sin(theta)
@@ -214,7 +206,7 @@ export class Vec3 {
     }
 
     public static vexp(vec: Vec3, weight = 1): Vec3 {
-        const r = weight * Math.exp(vec.x)
+        const r = weight * Math.exp((vec.x + vec.y) / 2)
         return new Vec3(r * Math.cos(vec.y), r * Math.sin(vec.y))
     }
 
