@@ -5,15 +5,15 @@ const EPSILON = 0.001
 export class Line {
 
     public static parallel(lineA: Line, lineB: Line): boolean {
-        if (Math.abs(lineA.slope - lineB.slope) < EPSILON) {
+        if (Math.abs(lineA.slope) - Math.abs(lineB.slope) < EPSILON) {
             return true
         }
         return false
     }
 
     public static getIntersection(lineA: Line, lineB: Line): Vec3 | null {
-        if (Math.abs(lineA.slope - lineB.slope) < EPSILON) {
-            console.warn('No Intersection.')
+        if (Line.parallel(lineA, lineB)) {
+            // console.warn('No Intersection.')
             return null
         }
         const x = (lineB.interception - lineA.interception) / (lineA.slope - lineB.slope)

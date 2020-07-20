@@ -26,8 +26,8 @@
 
       const params = {
         init: {
-          width: window.width,
-          height: 800,
+          width: 1000,
+          height: 1000,
         },
         preload: () => {},
         setup: (ctx) => {
@@ -36,42 +36,8 @@
           d.strokeStyle("rgba(0,0,0,0.3)");
           // d.dashline(d.center.x, d.center.y, d.width, d.center.y)
           // d.dashline(d.center.x, 0, d.center.x, d.center.y)
-
         },
         loop: (ctx) => {
-          //   d.loopOnce();
-            d.clear();
-            const line = new Line(
-              Vec3.getRandomVec(600),
-              Vec3.getRandomVec(600)
-            );
-
-            if (!lines.length) {
-              lines.push(line);
-              return
-            }
-
-            let intersect = false
-
-            d.line(line.a.x, line.a.y, line.b.x, line.b.y)
-
-            lines.forEach((ele) => {
-              const point = Line.getIntersection(line, ele);
-              if (point) {
-                if (line.includePoint(point) && ele.includePoint(point)) {
-                     d.circle(10, point.x, point.y)
-                    intersect = true
-                }
-              }
-            });
-
-            if (!intersect) {
-                lines.push(line)
-            }
-
-            lines.forEach((ele) => {
-                d.line(ele.a.x, ele.a.y, ele.b.x, ele.b.y)
-            })
         },
         click: (e) => {
           if (e === " ") {
