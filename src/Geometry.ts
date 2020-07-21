@@ -1,19 +1,18 @@
 import { Vec3 } from './Vector'
 
-const EPSILON = 0.001
+const EPSILON = 0.0001
 
 export class Line {
 
     public static parallel(lineA: Line, lineB: Line): boolean {
-        if (Math.abs(lineA.slope) - Math.abs(lineB.slope) < EPSILON) {
+        if (Math.abs(lineA.slope - lineB.slope) < EPSILON) {
             return true
         }
         return false
     }
 
-    public static getIntersection(lineA: Line, lineB: Line): Vec3 | null {
+    public static getIntersectionRay2D(lineA: Line, lineB: Line): Vec3 | null {
         if (Line.parallel(lineA, lineB)) {
-            // console.warn('No Intersection.')
             return null
         }
         const x = (lineB.interception - lineA.interception) / (lineA.slope - lineB.slope)
@@ -35,10 +34,18 @@ export class Line {
         this.#line[1] = vec.clone()
     }
     get slope(): number {
-        return (this.b.y - this.a.y) / (this.b.x - this.a.x)
+        let t = this.b.x - this.a.x
+        if (t === 0) {
+            t = EPSILON
+        }
+        return (this.b.y - this.a.y) / t
     }
     get interception(): number {
         return this.a.y - this.a.x * this.slope
+    }
+
+    get length(): number {
+        return Vec3.diff(this.a, this.b).length
     }
 
     constructor(vecA: Vec3, vecB: Vec3) {
@@ -46,13 +53,10 @@ export class Line {
     }
 
     includePoint(point: Vec3): boolean {
-        if (point.x < Math.min(this.a.x, this.b.x)) return false
-        else if (point.x > Math.max(this.a.x, this.b.x)) return false
-        else if (point.y < Math.min(this.a.y, this.b.y)) return false
-        else if (point.y > Math.max(this.a.y, this.b.y)) return false
-
-        if (!Line.parallel(this, new Line(this.a, point))) return false
-
-        return true
+        const diff = Vec3.diff(point, this.a).length + Vec3.diff(point, this.b).length - this.length
+        if (Math.abs(diff) < EPSILON) {
+            return true
+        }
+        return false
     }
 }

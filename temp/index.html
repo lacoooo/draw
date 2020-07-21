@@ -22,7 +22,21 @@
     <script>
       const EPSILON = 0.00001;
 
-      const lines = [];
+      const scale = 900;
+
+      const getLine = () => {
+        const line = new Line(
+          Vec3.getRandomVec(scale, scale, 0),
+          Vec3.getRandomVec(scale, scale, 0)
+        );
+        if (line.length > scale / 2) {
+          return getLine();
+        }
+        return line;
+      };
+
+      list = [getLine()];
+      let line2;
 
       const params = {
         init: {
@@ -33,11 +47,83 @@
         setup: (ctx) => {
           d.lineWidth(2);
           d.strokeOpen = true;
+          d.textSize(16);
           d.strokeStyle("rgba(0,0,0,0.3)");
-          // d.dashline(d.center.x, d.center.y, d.width, d.center.y)
-          // d.dashline(d.center.x, 0, d.center.x, d.center.y)
         },
         loop: (ctx) => {
+          d.clear();
+
+          // for (let i = 0; i < 40; i++) {
+          //   const line = getLine();
+
+          //   let ok = true;
+
+          //   list.forEach((ele) => {
+          //     const point = Line.getIntersectionRay2D(ele, line);
+
+          //     if (
+          //       point &&
+          //       ele.includePoint(point) &&
+          //       line.includePoint(point)
+          //     ) {
+          //       ok = false;
+          //     }
+          //   });
+
+          //   if (ok === true) {
+          //     list.push(line);
+          //   }
+          // }
+
+          // d.save()
+
+          // d.translate(50, 50)
+
+          // list.forEach((ele) => {
+          //   d.line(ele.a.x, ele.a.y, ele.b.x, ele.b.y);
+          // });
+
+          // d.restore()
+
+          // d.text(point.x + ', ' + point.y, point.x, point.y)
+
+          // d.text(line1.a.x + ', ' + line1.a.y, line1.a.x, line1.a.y)
+          // d.text(line1.b.x + ', ' + line1.b.y, line1.b.x, line1.b.y)
+          // console.log(line1.slope, line2.slope)
+
+          // =====================================================================================
+
+          for (let i = 0; i < 20; i++) {
+            let count = 0;
+
+            const line = getLine();
+
+            list.forEach((ele) => {
+              const point = Line.getIntersectionRay2D(ele, line);
+              if (
+                point &&
+                ele.includePoint(point) &&
+                line.includePoint(point)
+              ) {
+                count++;
+              }
+            });
+
+            if (count === 1) {
+              list.push(line);
+            }
+          }
+
+          d.save();
+
+          d.translate(50, 50);
+
+          list.forEach((ele) => {
+            d.line(ele.a.x, ele.a.y, ele.b.x, ele.b.y);
+          });
+
+          d.restore();
+
         },
         click: (e) => {
           if (e === " ") {
