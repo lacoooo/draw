@@ -87,8 +87,8 @@ export class Vec3 {
         return degree * Math.PI / 180
     }
 
-    public static getRandomVec(width: number = 100, height: number = width, deep: number = width): Vec3 {
-        return new Vec3(Math.random() * width, Math.random() * height, Math.random() * deep)
+    public static getRandomVec(width: number = 100, height: number = width, deep: number = width, k = 1): Vec3 {
+        return new Vec3((Math.random() - k) * width, (Math.random() - k) * height, (Math.random() - k) * deep)
     }
 
     public static getRandomGaussianVec(mean: number = 100, sd: number = 50): Vec3 {
