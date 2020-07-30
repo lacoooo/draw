@@ -89,7 +89,7 @@ export class Vec3 {
     }
 
     public static getRandomVec(width: number = 100, height: number = width, deep: number = width): Vec3 {
-        const vec = new Vec3(Math.random(), Math.random(), Math.random())
+        const vec = new Vec3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5)
         vec.normalize()
         vec.set(vec.x * width, vec.y * height, vec.z * deep)
         return vec
