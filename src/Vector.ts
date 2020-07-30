@@ -2,6 +2,7 @@ const EPSILON = 0.00001
 
 export class Vec3 {
 
+    public static zero = new Vec3()
     public static up = new Vec3(0, 1)
     public static down = new Vec3(0, -1)
     public static left = new Vec3(-1, 0)
@@ -88,7 +89,10 @@ export class Vec3 {
     }
 
     public static getRandomVec(width: number = 100, height: number = width, deep: number = width): Vec3 {
-        return new Vec3(Math.random() * width, Math.random() * height, Math.random() * deep)
+        const vec = new Vec3(Math.random(), Math.random(), Math.random())
+        vec.normalize()
+        vec.set(vec.x * width, vec.y * height, vec.z * deep)
+        return vec
     }
 
     public static getRandomGaussianVec(mean: number = 100, sd: number = 50): Vec3 {
@@ -347,26 +351,16 @@ export class Vec3 {
 
     public normalize(): this {
         const len = this.length
-        if (len <= EPSILON) {
-            this.x = 0
-            this.y = 0
-            this.z = 0
-            return this
+        if (len > EPSILON) {
+            this.x /= len
+            this.y /= len
+            this.z /= len
         }
-        else if (len - 1 <= EPSILON) {
-            return this
-        }
-        this.x /= len
-        this.y /= len
-        this.z /= len
         return this
     }
 
     public negative(): this {
-        this.x = -this.x
-        this.y = -this.y
-        this.z = -this.z
-        return this
+        return this.scale(-1)
     }
 
     public scale(scalar: number): this {
@@ -432,5 +426,7 @@ export class Vec3 {
         this.z = this.z * Math.cos(atopi) + this.x * Math.sin(atopi)
         return this
     }
+
+
 
 }
