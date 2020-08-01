@@ -125,7 +125,7 @@ var __classPrivateFieldSet = (undefined && undefined.__classPrivateFieldSet) || 
     privateMap.set(receiver, value);
     return value;
 };
-var _canvas, _ctx, _loopOnce, _preloadLeftCount;
+var _canvas, _ctx, _restore, _loopOnce, _preloadLeftCount;
 
 
 class Draw extends _Input__WEBPACK_IMPORTED_MODULE_0__["Input"] {
@@ -135,13 +135,17 @@ class Draw extends _Input__WEBPACK_IMPORTED_MODULE_0__["Input"] {
         _ctx.set(this, void 0);
         this.strokeOpen = false;
         this.fillOpen = false;
+        _restore.set(this, {
+            strokeOpen: false,
+            fillOpen: false
+        });
         this.frame = 0;
         _loopOnce.set(this, false);
         _preloadLeftCount.set(this, 0);
         this.canvasElementInit(params.init);
         this.canvasSizeInit(params.init);
         this.mouseEventInit(__classPrivateFieldGet(this, _canvas));
-        const { preload, setup, loop, click } = params;
+        const { preload, setup, loop, click, keyboard } = params;
         setTimeout(() => {
             if (preload) {
                 this.preload(preload);
@@ -154,6 +158,9 @@ class Draw extends _Input__WEBPACK_IMPORTED_MODULE_0__["Input"] {
             }
             if (click) {
                 this.click(click);
+            }
+            if (keyboard) {
+                this.keyboard(keyboard);
             }
         }, 0);
     }
@@ -179,8 +186,8 @@ class Draw extends _Input__WEBPACK_IMPORTED_MODULE_0__["Input"] {
     }
     canvasSizeInit(init) {
         const { width, height } = init || {};
-        this.width = width || 1000;
-        this.height = height || 1000;
+        this.width = width || window.innerWidth;
+        this.height = height || window.innerHeight;
     }
     _createElement(elem = "div") {
         const d = document.createElement(elem);
@@ -237,10 +244,16 @@ class Draw extends _Input__WEBPACK_IMPORTED_MODULE_0__["Input"] {
     }
     save() {
         __classPrivateFieldGet(this, _ctx).save();
+        __classPrivateFieldSet(this, _restore, {
+            strokeOpen: this.strokeOpen,
+            fillOpen: this.fillOpen
+        });
         return this;
     }
     restore() {
         __classPrivateFieldGet(this, _ctx).restore();
+        this.strokeOpen = __classPrivateFieldGet(this, _restore).strokeOpen;
+        this.fillOpen = __classPrivateFieldGet(this, _restore).fillOpen;
         return this;
     }
     line(x1, y1, x2, y2) {
@@ -262,15 +275,19 @@ class Draw extends _Input__WEBPACK_IMPORTED_MODULE_0__["Input"] {
         return this;
     }
     rect(x, y, width = 100, height = 100) {
+        this.beginPath();
         __classPrivateFieldGet(this, _ctx).rect(x, y, width, height);
+        this.closePath();
         this.draw();
         return this;
     }
     circle(radius, x, y) {
+        this.save();
         this.beginPath();
         __classPrivateFieldGet(this, _ctx).arc(x, y, radius, 0, Math.PI * 2, true);
         this.closePath();
         this.draw();
+        this.restore();
         return this;
     }
     point(x, y) {
@@ -445,7 +462,7 @@ class Draw extends _Input__WEBPACK_IMPORTED_MODULE_0__["Input"] {
         aTag.remove();
     }
 }
-_canvas = new WeakMap(), _ctx = new WeakMap(), _loopOnce = new WeakMap(), _preloadLeftCount = new WeakMap();
+_canvas = new WeakMap(), _ctx = new WeakMap(), _restore = new WeakMap(), _loopOnce = new WeakMap(), _preloadLeftCount = new WeakMap();
 
 
 /***/ }),
@@ -476,7 +493,7 @@ var __classPrivateFieldGet = (undefined && undefined.__classPrivateFieldGet) || 
 };
 var _line;
 
-const EPSILON = 0.001;
+const EPSILON = 0.0001;
 class Line {
     constructor(vecA, vecB) {
         _line.set(this, void 0);
@@ -488,9 +505,8 @@ class Line {
         }
         return false;
     }
-    static getIntersection(lineA, lineB) {
-        if (Math.abs(lineA.slope - lineB.slope) < EPSILON) {
-            console.warn('No Intersection.');
+    static getIntersectionRay2D(lineA, lineB) {
+        if (Line.parallel(lineA, lineB)) {
             return null;
         }
         const x = (lineB.interception - lineA.interception) / (lineA.slope - lineB.slope);
@@ -510,23 +526,24 @@ class Line {
         __classPrivateFieldGet(this, _line)[1] = vec.clone();
     }
     get slope() {
-        return (this.b.y - this.a.y) / (this.b.x - this.a.x);
+        let t = this.b.x - this.a.x;
+        if (t === 0) {
+            t = EPSILON;
+        }
+        return (this.b.y - this.a.y) / t;
     }
     get interception() {
         return this.a.y - this.a.x * this.slope;
     }
+    get length() {
+        return _Vector__WEBPACK_IMPORTED_MODULE_0__["Vec3"].diff(this.a, this.b).length;
+    }
     includePoint(point) {
-        if (point.x < Math.min(this.a.x, this.b.x))
-            return false;
-        else if (point.x > Math.max(this.a.x, this.b.x))
-            return false;
-        else if (point.y < Math.min(this.a.y, this.b.y))
-            return false;
-        else if (point.y > Math.max(this.a.y, this.b.y))
-            return false;
-        if (!Line.parallel(this, new Line(this.a, point)))
-            return false;
-        return true;
+        const diff = _Vector__WEBPACK_IMPORTED_MODULE_0__["Vec3"].diff(point, this.a).length + _Vector__WEBPACK_IMPORTED_MODULE_0__["Vec3"].diff(point, this.b).length - this.length;
+        if (Math.abs(diff) < EPSILON) {
+            return true;
+        }
+        return false;
     }
 }
 _line = new WeakMap();
@@ -662,6 +679,11 @@ class Input {
         }, false);
     }
     click(cb) {
+        __classPrivateFieldGet(this, _canvas).addEventListener('mousedown', (ev) => {
+            cb(ev);
+        }, false);
+    }
+    keyboard(cb) {
         document.onkeydown = e => {
             cb(e.key, e.keyCode);
         };
@@ -697,9 +719,13 @@ class Num {
     static within(p, a, b) {
         return p >= Math.min(a, b) && p <= Math.max(a, b);
     }
-    static randomRange(a, b = 0) {
+    static randomRange(a, b) {
         const r = (a > b) ? (a - b) : (b - a);
         return a + Math.random() * r;
+    }
+    static randomRangeInt(a, b) {
+        const r = (a > b) ? (a - b) : (b - a);
+        return Math.round(a + Math.random() * r);
     }
 }
 class Geom {
@@ -796,7 +822,10 @@ class Vec3 {
         return degree * Math.PI / 180;
     }
     static getRandomVec(width = 100, height = width, deep = width) {
-        return new Vec3(Math.random() * width, Math.random() * height, Math.random() * deep);
+        const vec = new Vec3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5);
+        vec.normalize();
+        vec.set(vec.x * width, vec.y * height, vec.z * deep);
+        return vec;
     }
     static getRandomGaussianVec(mean = 100, sd = 50) {
         const getNum = () => {
@@ -1009,25 +1038,15 @@ class Vec3 {
     }
     normalize() {
         const len = this.length;
-        if (len <= EPSILON) {
-            this.x = 0;
-            this.y = 0;
-            this.z = 0;
-            return this;
+        if (len > EPSILON) {
+            this.x /= len;
+            this.y /= len;
+            this.z /= len;
         }
-        else if (len - 1 <= EPSILON) {
-            return this;
-        }
-        this.x /= len;
-        this.y /= len;
-        this.z /= len;
         return this;
     }
     negative() {
-        this.x = -this.x;
-        this.y = -this.y;
-        this.z = -this.z;
-        return this;
+        return this.scale(-1);
     }
     scale(scalar) {
         this.x *= scalar;
@@ -1085,6 +1104,7 @@ class Vec3 {
     }
 }
 _vect = new WeakMap();
+Vec3.zero = new Vec3();
 Vec3.up = new Vec3(0, 1);
 Vec3.down = new Vec3(0, -1);
 Vec3.left = new Vec3(-1, 0);
