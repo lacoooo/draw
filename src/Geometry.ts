@@ -20,6 +20,15 @@ export class Line {
         return new Vec3(x, y)
     }
 
+    public static getDistanceFromPoint(line: Line, point: Vec3): number {
+        let dist = 0
+        const vec1 = Vec3.diff(line.a, line.b)
+        const vec2 = Vec3.diff(point, line.a)
+        const theta = Vec3.getRadian(vec1, vec2)
+        dist = Math.sin(theta) * vec2.length
+        return dist
+    }
+
     #line: [Vec3, Vec3]
     get a(): Vec3 {
         return this.#line[0]
