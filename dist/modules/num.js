@@ -12,9 +12,13 @@ export class Num {
     static within(p, a, b) {
         return p >= Math.min(a, b) && p <= Math.max(a, b);
     }
-    static randomRange(a, b = 0) {
+    static randomRange(a, b) {
         const r = (a > b) ? (a - b) : (b - a);
         return a + Math.random() * r;
+    }
+    static randomRangeInt(a, b) {
+        const r = (a > b) ? (a - b) : (b - a);
+        return Math.round(a + Math.random() * r);
     }
 }
 export class Geom {

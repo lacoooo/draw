@@ -21,6 +21,11 @@ export class Draw extends Input implements Idraw {
     strokeOpen = false
     fillOpen = false
 
+    #restore = {
+        strokeOpen: false,
+        fillOpen: false
+    }
+
     public frame = 0
 
     #loopOnce = false
@@ -40,7 +45,8 @@ export class Draw extends Input implements Idraw {
             preload,
             setup,
             loop,
-            click
+            click,
+            keyboard
         } = params
 
         setTimeout(() => {
@@ -55,6 +61,9 @@ export class Draw extends Input implements Idraw {
             }
             if (click) {
                 this.click(click)
+            }
+            if (keyboard) {
+                this.keyboard(keyboard)
             }
         }, 0)
     }
@@ -75,8 +84,8 @@ export class Draw extends Input implements Idraw {
 
     private canvasSizeInit(init?: Iinit) {
         const { width, height } = init || {}
-        this.width = width || 1000
-        this.height = height || 1000
+        this.width = width || window.innerWidth
+        this.height = height || window.innerHeight
     }
 
     /**
@@ -157,11 +166,21 @@ export class Draw extends Input implements Idraw {
 
     public save(): this {
         this.#ctx.save()
+
+        this.#restore = {
+            strokeOpen: this.strokeOpen,
+            fillOpen: this.fillOpen
+        }
+
         return this
     }
 
     public restore(): this {
         this.#ctx.restore()
+
+        this.strokeOpen = this.#restore.strokeOpen
+        this.fillOpen = this.#restore.fillOpen
+
         return this
     }
 
@@ -195,16 +214,20 @@ export class Draw extends Input implements Idraw {
     }
 
     public rect(x: number, y: number, width: number = 100, height: number = 100): this {
+        this.beginPath()
         this.#ctx.rect(x, y, width, height)
+        this.closePath()
         this.draw()
         return this
     }
 
     public circle(radius: number, x: number, y: number): this {
+        this.save()
         this.beginPath()
         this.#ctx.arc(x, y, radius, 0, Math.PI * 2, true)
         this.closePath()
         this.draw()
+        this.restore()
         return this
     }
 

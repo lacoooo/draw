@@ -141,7 +141,21 @@ export class Input {
      * Register mouse down events
      * @param cb Function triggered on mouse down
      */
-    public click(cb: (key: KeyboardEvent['key'], keyCode: KeyboardEvent['keyCode']) => void) {
+    public click(cb:(ev: MouseEvent) => void) {
+        this.#canvas.addEventListener(
+            'mousedown',
+            (ev: MouseEvent) => {
+                cb(ev)
+            },
+            false
+        )
+    }
+
+    /**
+     * Register keyboard events
+     * @param cb Function triggered on keyboard
+     */
+    public keyboard(cb: (key: KeyboardEvent['key'], keyCode: KeyboardEvent['keyCode']) => void) {
         document.onkeydown = e => {
             cb(e.key, e.keyCode)
         }

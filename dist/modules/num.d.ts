@@ -4,7 +4,8 @@ export declare class Num {
     static lerp(a: number, b: number, t: number): number;
     static clamp(val: number, min: number, max: number): number;
     static within(p: number, a: number, b: number): boolean;
-    static randomRange(a: number, b?: number): number;
+    static randomRange(a: number, b: number): number;
+    static randomRangeInt(a: number, b: number): number;
 }
 export declare class Geom {
 }

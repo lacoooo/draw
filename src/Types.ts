@@ -21,7 +21,8 @@ export type Iinit = {
 export type Ipreload = () => void
 export type Isetup = (ctx: CanvasRenderingContext2D) => void
 export type Iloop = (ctx: CanvasRenderingContext2D) => void
-export type Iclick = (key: KeyboardEvent['key'], keyCode: KeyboardEvent['keyCode']) => void
+export type Ikeyboard = (key: KeyboardEvent['key'], keyCode: KeyboardEvent['keyCode']) => void
+export type Iclick = (ev: MouseEvent) => void
 
 export interface Idraw {
     frame: number
@@ -29,7 +30,7 @@ export interface Idraw {
     height: number
     setup(cb: Isetup): void
     loop(cb: Iloop): void
-    click(cb: Iclick): void
+    keyboard(cb: Ikeyboard): void
     strokeWeight(width: number): void
     line(x1: number, y1: number, x2: number, y2: number): void
 }
@@ -40,6 +41,7 @@ export interface Iparams {
     setup?: Isetup
     loop?: Iloop
     click?: Iclick
+    keyboard?: Ikeyboard
 }
 
 export interface IimgObject {

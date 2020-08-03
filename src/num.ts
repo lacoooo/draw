@@ -77,11 +77,15 @@ export class Num {
    * @param a range value 1
    * @param b range value 2
    */
-  static randomRange( a:number, b:number = 0 ):number {
+  static randomRange( a:number, b:number ):number {
     const r = (a > b) ? (a - b) : (b - a);
     return a + Math.random() * r;
   }
 
+  static randomRangeInt(a: number, b: number ): number {
+    const r = (a > b) ? (a - b) : (b - a);
+    return Math.round(a + Math.random() * r);
+  }
 
 //   /**
 //    * Normalize a value within a range.
