@@ -427,6 +427,8 @@ export class Vec3 {
         return this
     }
 
-
+    public toArray(): number[] {
+        return [this.x, this.y, this.z]
+    }
 
 }
