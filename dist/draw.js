@@ -1102,6 +1102,9 @@ class Vec3 {
         this.z = this.z * Math.cos(atopi) + this.x * Math.sin(atopi);
         return this;
     }
+    toArray() {
+        return [this.x, this.y, this.z];
+    }
 }
 _vect = new WeakMap();
 Vec3.zero = new Vec3();
