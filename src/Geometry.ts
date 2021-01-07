@@ -44,7 +44,7 @@ export class Line {
     }
     get slope(): number {
         let t = this.b.x - this.a.x
-        if (t === 0) {
+        if (t < EPSILON) {
             t = EPSILON
         }
         return (this.b.y - this.a.y) / t
@@ -57,7 +57,7 @@ export class Line {
         return Vec3.diff(this.a, this.b).length
     }
 
-    constructor(vecA: Vec3, vecB: Vec3) {
+    private constructor(vecA: Vec3, vecB: Vec3) {
         this.#line = [vecA.clone(), vecB.clone()]
     }
 

@@ -68,7 +68,7 @@ export class Draw extends Input implements Idraw {
         }, 0)
     }
 
-    private canvasElementInit(init?: Iinit) {
+    canvasElementInit(init?: Iinit) {
         const { canvasId } = init || {}
         if (canvasId) {
             const canvas = document.getElementById(canvasId) as HTMLCanvasElement
